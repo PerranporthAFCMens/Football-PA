@@ -51,7 +51,7 @@ jobs:
           from pathlib import Path
 
           old = 'https://PerranporthAFCMens.github.io/Perranporth/'
-          new = 'https://www.footballpa.com/Perranporth/'
+          new = 'https://footballpa.com/Perranporth/'
           text_suffixes = {'.html', '.js', '.json', '.webmanifest', '.css', '.svg'}
 
           for path in Path('Perranporth').rglob('*'):
