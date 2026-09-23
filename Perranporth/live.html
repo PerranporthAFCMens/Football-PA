@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Perranporth AFC Live</title>
+  <meta name="theme-color" content="#0b5ea8">
+  <style>
+    :root{--blue:#0b5ea8;--blue2:#1578c8;--navy:#0a2942;--sky:#dff2ff;--green:#138a43;--green2:#dff6e8;--red:#d62828;--red2:#ffe4e4;--amber:#c88200;--amber2:#fff1c9;--purple:#6d42c1;--purple2:#efe7ff;--bg:#eaf4fb;--card:#fff;--line:#d8e7f1;--text:#12202c;--muted:#678091}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#dff2ff 0,#f5f9fc 240px,#eef4f8 100%);color:var(--text);-webkit-text-size-adjust:100%}
+    .app{max-width:780px;margin:0 auto;padding:max(10px,env(safe-area-inset-top)) 10px max(28px,env(safe-area-inset-bottom))}
+    .card{background:var(--card);border:1px solid #e0ebf2;border-radius:20px;padding:16px;margin-bottom:12px;box-shadow:0 7px 22px #0b5ea812}
+    .top{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;border:0}.badge{width:58px;height:58px;border-radius:50%;object-fit:cover;background:#fff;border:3px solid #fff}.club{font-size:22px;font-weight:900;color:#fff}.small{font-size:12px;color:var(--muted)}.top .small{color:#d9ecfa}
+    .topActions{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}.livepill{border-radius:999px;padding:8px 12px;font-size:12px;font-weight:900;background:#dff6e8;color:#12652f;border:2px solid #fff}.livepill.ht{background:var(--amber2);color:#805700}.livepill.ft{background:#edf2f5;color:#42515c}.livepill.none{background:#edf2f5;color:#526572}.shareBtn{border:2px solid #fff;border-radius:999px;min-height:36px;padding:7px 12px;background:#ffffff18;color:#fff;font-size:12px;font-weight:900;cursor:pointer;white-space:nowrap}.shareBtn:active{transform:scale(.97)}.lineupShareBtn{width:100%;margin-top:10px;border:0;border-radius:12px;min-height:46px;padding:10px 14px;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;font-size:14px;font-weight:900;cursor:pointer}.lineupShareBtn:active{transform:scale(.985)}
+    .scoreCard{overflow:hidden;padding:0}.scoreHead{padding:12px 16px;text-align:center;background:linear-gradient(90deg,#eaf5fd,#f7fbfe);border-bottom:1px solid var(--line)}.competition{font-size:13px;font-weight:900;color:var(--blue);text-transform:uppercase;letter-spacing:.5px}
+    .scoreBody{padding:20px 16px 16px;background:linear-gradient(180deg,#fff,#f7fbfe)}.scoregrid{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:center;text-align:center}.team{font-size:18px;font-weight:900;color:var(--navy)}.score{font-size:48px;font-weight:900;color:var(--navy);white-space:nowrap;background:#edf7fd;padding:5px 14px;border-radius:16px;border:1px solid #cfe6f5}.minute{text-align:center;margin-top:10px;font-size:15px;font-weight:900;color:var(--green)}
+    h2{font-size:18px;margin:0 0 12px;color:var(--navy)}
+    .scorers{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.scorerCol{min-width:0}.scorer{font-size:13px;padding:6px 0;border-bottom:1px solid #e8f0f5}.scorer:last-child{border-bottom:0}.right{text-align:right}
+    .tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;background:#edf4f8;padding:5px;border-radius:14px}.tab{border:0;border-radius:10px;min-height:44px;font-weight:900;background:transparent;color:#466071}.tab.active{background:linear-gradient(135deg,var(--blue),var(--blue2));color:white;box-shadow:0 3px 10px #0b5ea82b}
+    .lineup{display:grid;grid-template-columns:1fr 1fr;gap:10px}.lineupBox{border-radius:16px;padding:12px}.lineupBox.pitch{background:linear-gradient(180deg,#e8f8ee,#f8fffa);border:1px solid #bfe5cc}.lineupBox.bench{background:linear-gradient(180deg,#eef5fb,#fbfdff);border:1px solid #cddfea}.lineupTitle{font-size:12px;text-transform:uppercase;letter-spacing:.5px;font-weight:900;margin-bottom:8px}.pitch .lineupTitle{color:#1b6c38}.bench .lineupTitle{color:#315a78}
+    .player{padding:8px 9px;border-bottom:1px solid #e4edf2;font-size:14px;font-weight:800;border-radius:9px}.player:last-child{border-bottom:0}.player.onfield{background:#fff;margin-bottom:5px;border:1px solid #d9eedf}.player.benched{background:#fff;margin-bottom:5px;border:1px solid #dde8ef}.player.sentoff{background:#fff7f7;border-color:#efcaca}.tag{font-size:10px;border-radius:999px;padding:4px 7px;margin-left:6px;font-weight:900;white-space:nowrap}.tag.return{background:var(--purple2);color:#56329d}.cardMark{display:inline-block;width:9px;height:14px;border-radius:2px;margin-left:7px;vertical-align:-2px;box-shadow:0 0 0 1px #00000018}.cardMark.yellow{background:#f4cf14}.cardMark.red{background:#d62828}.goalMark{display:inline-block;margin-left:7px;font-size:13px;vertical-align:0}.assistMark{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;margin-left:6px;border-radius:999px;background:#dcecff;color:#0b5ea8;font-size:10px;font-weight:900;vertical-align:1px;border:1px solid #b8d8f2}
+    .event{display:grid;grid-template-columns:48px 30px 1fr;gap:8px;align-items:start;padding:11px 9px;border-bottom:1px solid #e7eef3;border-radius:10px}.event:nth-child(odd){background:#f8fbfd}.eventMin{font-weight:900;color:var(--blue)}.eventIcon{font-size:19px;text-align:center}.eventText{font-size:14px;line-height:1.35}.eventText b{display:block}.eventSub{font-size:12px;color:var(--muted);margin-top:2px}
+    .updated{text-align:center;font-size:11px;color:var(--muted);padding:4px 0 1px}.empty{text-align:center;padding:30px 12px;color:var(--muted)}
+    .demo{background:linear-gradient(135deg,#fff5cf,#fffaf0);border-color:#ead182}.demoTitle{font-weight:900;color:#715300;margin-bottom:5px}.demoBtns{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}.demoBtn{border:0;border-radius:11px;min-height:44px;padding:8px;font-size:12px;font-weight:900;background:#fff;border:1px solid #dcc46f;color:#5f4c00;box-shadow:0 2px 7px #7b5f0014}.demoBtn.interchange{background:var(--purple2);border-color:#cdbcf5;color:#553293}
+    .legend{margin-top:10px;padding:10px 11px;border-radius:12px;background:#f7fafc;color:#5e7484;font-size:12px;line-height:1.45}.hidden{display:none!important}
+    @media(max-width:520px){.app{padding:7px}.card{border-radius:16px;padding:13px}.top{padding:13px;align-items:flex-start;flex-wrap:wrap}.badge{width:48px;height:48px}.club{font-size:18px}.topActions{width:100%;margin-left:0;justify-content:space-between}.score{font-size:38px;padding:5px 10px}.team{font-size:15px}.lineup{grid-template-columns:1fr}.scorers{gap:7px}.demoBtns{grid-template-columns:1fr 1fr}.scoreBody{padding:17px 11px 14px}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="card top">
+      <img class="badge" src="https://images.weserv.nl/?url=www.perranporthafc.co.uk/wp-content/themes/sharkfin-1-4/images/perranporth-afc-large.jpg&output=png&w=180&h=180&fit=contain" alt="Perranporth AFC badge">
+      <div><div class="club">Perranporth AFC</div><div class="small">Men's First Team • Live Match Centre</div></div>
+      <div class="topActions">
+        <div id="statusPill" class="livepill">LIVE</div>
+        <button id="shareBtn" class="shareBtn" type="button" aria-label="Share live match centre">↗ Share</button>
+      </div>
+    </section>
+
+    <section class="card scoreCard">
+      <div class="scoreHead"><div id="competition" class="competition">Intermediate Cup • Round 1</div></div>
+      <div class="scoreBody">
+        <div class="scoregrid">
+          <div id="homeTeam" class="team">Perranporth</div>
+          <div id="score" class="score">2–1</div>
+          <div id="awayTeam" class="team">TEST FC</div>
+        </div>
+        <div id="minute" class="minute">67'</div>
+        <div class="scorers">
+          <div id="homeScorers" class="scorerCol"></div>
+          <div id="awayScorers" class="scorerCol right"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="tabs">
+        <button id="lineupTab" class="tab active" type="button">Current Lineup</button>
+        <button id="updatesTab" class="tab" type="button">Match Updates</button>
+      </div>
+
+      <div id="lineupPanel">
+        <div class="lineup">
+          <div class="lineupBox pitch"><div class="lineupTitle">🟢 On the pitch</div><div id="onPitch"></div></div>
+          <div class="lineupBox bench"><div class="lineupTitle">🔵 Off the pitch / available</div><div id="bench"></div></div>
+        </div>
+        <button id="shareLineupBtn" class="lineupShareBtn" type="button">↗ Share Lineup Image</button>
+        <div class="legend">Rolling interchanges are supported: a player who goes off stays available and can return to the pitch later.</div>
+      </div>
+
+      <div id="updatesPanel" class="hidden"><div id="events"></div></div>
+    </section>
+
+    <section id="demoPanel" class="card demo hidden">
+      <div class="demoTitle">Demo controls</div>
+      <div class="small">These only change this browser. They do not touch the real Match Centre.</div>
+      <div class="demoBtns">
+        <button class="demoBtn" type="button" data-demo="goal">⚽ Perran goal</button>
+        <button class="demoBtn" type="button" data-demo="oppgoal">⚽ Opp goal</button>
+        <button class="demoBtn interchange" type="button" data-demo="interchange">🔄 Interchange</button>
+        <button class="demoBtn interchange" type="button" data-demo="return">↩️ Bring player back</button>
+        <button class="demoBtn" type="button" data-demo="half">⏸ Half time</button>
+        <button class="demoBtn" type="button" data-demo="second">▶ Second half</button>
+        <button class="demoBtn" type="button" data-demo="full">🏁 Full time</button>
+      </div>
+    </section>
+    <div id="updated" class="updated"></div>
+  </main>
+
+<script>
+(() => {
+  const demo = new URLSearchParams(location.search).get('demo') === '1';
+  const APP_URL='https://script.google.com/macros/s/AKfycbyHHPOgGsImS9Kvr3SdZiKUGp3ZrbnOoJnIPUckm_Y9hH1K9b_j_Kgmw6UhzVMAyQ0q/exec';
+  const state = {
+    status:'LIVE', minute:67, home:'Perranporth', away:'TEST FC', competition:'Intermediate Cup • Round 1', homeScore:2, awayScore:1,
+    formation:'4-2-3-1', matchDate:'', kickoff:'', onPitchDetails:[],
+    allPlayers:['Leo Osborne','Jake Allen','Dan Gilbert','Jack Smith','George Parkes','Luke Watson-Read','Kierren Faulkner','Rian Faulkner','Alex Taylor','Tom Goodman','Fin Stribley','Ben Lawrence','Dan Ware','Gav Counter','Tyreece Gallaway'],
+    onPitch:['Leo Osborne','Jake Allen','Dan Gilbert','Jack Smith','George Parkes','Luke Watson-Read','Kierren Faulkner','Rian Faulkner','Alex Taylor','Tom Goodman','Ben Lawrence'],
+    everReturned:[], yellowCards:[], redCards:[], dismissed:[], goalCounts:{}, assistCounts:{},
+    homeGoals:[{m:18,p:'Alex Taylor'},{m:54,p:'Tom Goodman'}], awayGoals:[{m:61,p:'TEST FC'}],
+    events:[
+      {m:64,i:'🔄',t:'Interchange',s:'Ben Lawrence on • Fin Stribley off'},
+      {m:61,i:'⚽',t:'Goal — TEST FC',s:'Perranporth 2–1 TEST FC'},
+      {m:58,i:'🟨',t:'Dan Gilbert booked',s:''},
+      {m:54,i:'⚽',t:'GOAL! Tom Goodman',s:'Perranporth 2–0 TEST FC'},
+      {m:18,i:'⚽',t:'GOAL! Alex Taylor',s:'Perranporth 1–0 TEST FC'}
+    ],
+    onPitchDetails:[
+      {name:'Leo Osborne',x:50,y:92},{name:'Jake Allen',x:14,y:75},{name:'Dan Gilbert',x:38,y:78},
+      {name:'Jack Smith',x:62,y:78},{name:'George Parkes',x:86,y:75},{name:'Luke Watson-Read',x:25,y:55},
+      {name:'Kierren Faulkner',x:50,y:59},{name:'Rian Faulkner',x:75,y:55},{name:'Alex Taylor',x:18,y:28},
+      {name:'Tom Goodman',x:50,y:20},{name:'Ben Lawrence',x:82,y:28}
+    ]
+  };
+
+  const $=id=>document.getElementById(id);
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  async function shareLive(){
+    const btn=$('shareBtn');
+    const url=new URL(location.href);
+    url.searchParams.delete('demo');
+    const shareUrl=url.toString();
+    const original=btn.textContent;
+    try{
+      if(navigator.share){
+        await navigator.share({title:'Perranporth AFC Live',text:'Follow Perranporth AFC live',url:shareUrl});
+        return;
+      }
+      if(navigator.clipboard&&window.isSecureContext){
+        await navigator.clipboard.writeText(shareUrl);
+        btn.textContent='✓ Link copied';
+      } else {
+        const input=document.createElement('textarea');
+        input.value=shareUrl; input.setAttribute('readonly',''); input.style.position='fixed'; input.style.opacity='0';
+        document.body.appendChild(input); input.select(); document.execCommand('copy'); input.remove();
+        btn.textContent='✓ Link copied';
+      }
+      setTimeout(()=>{btn.textContent=original;},1800);
+    }catch(err){
+      if(err&&err.name==='AbortError')return;
+      btn.textContent='Copy failed';
+      setTimeout(()=>{btn.textContent=original;},1800);
+    }
+  }
+  $('shareBtn').addEventListener('click',shareLive);
+
+
+  function roundedRect_(ctx,x,y,w,h,r){
+    const rr=Math.min(r,w/2,h/2);
+    ctx.beginPath();
+    ctx.moveTo(x+rr,y);
+    ctx.arcTo(x+w,y,x+w,y+h,rr);
+    ctx.arcTo(x+w,y+h,x,y+h,rr);
+    ctx.arcTo(x,y+h,x,y,rr);
+    ctx.arcTo(x,y,x+w,y,rr);
+    ctx.closePath();
+  }
+
+  function fitText_(ctx,text,maxWidth,startSize,minSize,weight){
+    let size=startSize;
+    while(size>minSize){
+      ctx.font=(weight||700)+' '+size+'px Arial,Helvetica,sans-serif';
+      if(ctx.measureText(text).width<=maxWidth)return size;
+      size-=2;
+    }
+    return minSize;
+  }
+
+  function spectatorFixtureTitle_(){
+    const home=state.home||'';
+    const away=state.away||'';
+    return (home||'Perranporth')+' v '+(away||'Opponent');
+  }
+
+  function spectatorLineupCanvas_(){
+    if(!state.onPitch.length)throw new Error('No live lineup is available yet.');
+
+    const canvas=document.createElement('canvas');
+    canvas.width=1080;
+    canvas.height=1350;
+    const ctx=canvas.getContext('2d');
+
+    ctx.fillStyle='#f2f5f7';
+    ctx.fillRect(0,0,1080,1350);
+
+    // Header
+    ctx.fillStyle='#0b5ea8';
+    ctx.fillRect(0,0,1080,210);
+    ctx.textAlign='center';
+    ctx.fillStyle='#fff';
+    ctx.font='900 36px Arial,Helvetica,sans-serif';
+    ctx.fillText('PERRANPORTH AFC',540,58);
+
+    const title=spectatorFixtureTitle_();
+    const titleSize=fitText_(ctx,title,950,52,30,900);
+    ctx.font='900 '+titleSize+'px Arial,Helvetica,sans-serif';
+    ctx.fillText(title,540,120);
+
+    const meta=[state.competition,state.matchDate,state.kickoff?('KO '+state.kickoff):'',state.formation?('Formation '+state.formation):'']
+      .filter(Boolean).join('  •  ');
+    const metaSize=fitText_(ctx,meta,950,26,18,600);
+    ctx.font='600 '+metaSize+'px Arial,Helvetica,sans-serif';
+    ctx.fillStyle='rgba(255,255,255,.92)';
+    ctx.fillText(meta,540,168);
+
+    // Pitch
+    const x=100,y=255,w=880,h=820;
+    roundedRect_(ctx,x,y,w,h,24);
+    ctx.fillStyle='#17813a';ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=5;ctx.stroke();
+    ctx.strokeStyle='rgba(255,255,255,.82)';ctx.lineWidth=4;
+    ctx.beginPath();ctx.moveTo(x,y+h/2);ctx.lineTo(x+w,y+h/2);ctx.stroke();
+    ctx.beginPath();ctx.arc(x+w/2,y+h/2,82,0,Math.PI*2);ctx.stroke();
+    const boxW=w*.52,boxH=h*.16,boxX=x+(w-boxW)/2;
+    ctx.strokeRect(boxX,y,boxW,boxH);ctx.strokeRect(boxX,y+h-boxH,boxW,boxH);
+    const sixW=w*.26,sixH=h*.07,sixX=x+(w-sixW)/2;
+    ctx.strokeRect(sixX,y,sixW,sixH);ctx.strokeRect(sixX,y+h-sixH,sixW,sixH);
+
+    const details=(state.onPitchDetails&&state.onPitchDetails.length)
+      ? state.onPitchDetails
+      : state.onPitch.map((name,i)=>({
+          name,
+          x:[50,14,38,62,86,25,50,75,18,50,82][i]||50,
+          y:[92,75,78,78,75,55,59,55,28,20,28][i]||50
+        }));
+
+    details.forEach((p,i)=>{
+      const name=p.name||state.onPitch[i]||'Player';
+      const px=x+(Math.max(5,Math.min(95,Number(p.x)||50))/100)*w;
+      const py=y+(Math.max(5,Math.min(95,Number(p.y)||50))/100)*h;
+      const initials=String(name).split(/\s+/).filter(Boolean).map(v=>v[0]).join('').slice(0,2).toUpperCase();
+
+      ctx.beginPath();ctx.arc(px,py,34,0,Math.PI*2);
+      ctx.fillStyle='#0b5ea8';ctx.fill();
+      ctx.strokeStyle='#fff';ctx.lineWidth=5;ctx.stroke();
+      ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.font='800 24px Arial,Helvetica,sans-serif';ctx.fillText(initials,px,py+1);
+
+      const size=fitText_(ctx,name,190,25,17,800);
+      ctx.font='800 '+size+'px Arial,Helvetica,sans-serif';
+      const tw=Math.min(190,ctx.measureText(name).width),lw=tw+28,lh=42,lx=px-lw/2,ly=py+42;
+      roundedRect_(ctx,lx,ly,lw,lh,10);
+      ctx.fillStyle='rgba(255,255,255,.96)';ctx.fill();
+      ctx.fillStyle='#17212b';ctx.fillText(name,px,ly+lh/2+1);
+    });
+
+    // Available / bench
+    const off=state.allPlayers.filter(p=>!state.onPitch.includes(p)&&!state.dismissed.includes(p));
+    ctx.textAlign='left';ctx.textBaseline='alphabetic';
+    ctx.fillStyle='#17212b';ctx.font='900 31px Arial,Helvetica,sans-serif';
+    ctx.fillText('SUBSTITUTES / AVAILABLE',100,1120);
+
+    if(off.length){
+      ctx.font='700 25px Arial,Helvetica,sans-serif';
+      let cx=100,cy=1168;
+      off.forEach((name,i)=>{
+        const label=(i+1)+'. '+name;
+        const cw=ctx.measureText(label).width+34;
+        if(cx+cw>980){cx=100;cy+=50}
+        roundedRect_(ctx,cx,cy-31,cw,40,9);
+        ctx.fillStyle='#fff';ctx.fill();
+        ctx.fillStyle='#334155';ctx.fillText(label,cx+16,cy-3);
+        cx+=cw+12;
+      });
+    }else{
+      ctx.font='600 24px Arial,Helvetica,sans-serif';
+      ctx.fillStyle='#64748b';ctx.fillText('No available substitutes',100,1168);
+    }
+
+    ctx.textAlign='right';
+    ctx.font='600 18px Arial,Helvetica,sans-serif';
+    ctx.fillStyle='#64748b';
+    ctx.fillText('Perranporth AFC Live Match Centre',980,1320);
+
+    return canvas;
+  }
+
+  function canvasBlob_(canvas){
+    return new Promise((resolve,reject)=>{
+      canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('Could not create lineup image.')),'image/png',1);
+    });
+  }
+
+  async function shareSpectatorLineup_(){
+    const btn=$('shareLineupBtn');
+    const original=btn.textContent;
+    try{
+      btn.disabled=true;btn.textContent='Creating image…';
+      const blob=await canvasBlob_(spectatorLineupCanvas_());
+      const file=new File([blob],'Perranporth-Lineup.png',{type:'image/png'});
+
+      if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[file]}))){
+        await navigator.share({title:'Perranporth AFC Lineup',text:spectatorFixtureTitle_(),files:[file]});
+      }else{
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement('a');
+        a.href=url;a.download='Perranporth-Lineup.png';
+        document.body.appendChild(a);a.click();a.remove();
+        setTimeout(()=>URL.revokeObjectURL(url),1500);
+      }
+    }catch(err){
+      if(!(err&&err.name==='AbortError')){
+        btn.textContent='Could not create image';
+        setTimeout(()=>{btn.textContent=original;},1800);
+      }
+    }finally{
+      btn.disabled=false;
+      if(btn.textContent==='Creating image…')btn.textContent=original;
+    }
+  }
+
+  $('shareLineupBtn').addEventListener('click',shareSpectatorLineup_);
+
+  function render(){
+    $('competition').textContent=state.competition;
+    $('homeTeam').textContent=state.home;
+    $('awayTeam').textContent=state.away;
+    $('score').textContent=state.homeScore+'–'+state.awayScore;
+    $('minute').textContent=state.status==='FT'?'Full Time':state.status==='HT'?'Half Time':state.minute+"'";
+    const pill=$('statusPill'); pill.textContent=state.status; pill.className='livepill'+(state.status==='HT'?' ht':state.status==='FT'?' ft':'');
+    $('homeScorers').innerHTML=state.homeGoals.map(g=>`<div class="scorer">⚽ ${esc(g.p)} ${g.m}'</div>`).join('');
+    $('awayScorers').innerHTML=state.awayGoals.map(g=>`<div class="scorer">${g.m}' ${esc(g.p)} ⚽</div>`).join('');
+
+    const cardFor=p=>state.redCards.includes(p)?'<span class="cardMark red" title="Red card"></span>':state.yellowCards.includes(p)?'<span class="cardMark yellow" title="Yellow card"></span>':'';
+    const contributionFor=p=>{
+      const goals=Number(state.goalCounts[p]||0), assists=Number(state.assistCounts[p]||0);
+      let out='';
+      if(goals) out+='<span class="goalMark" title="'+goals+' goal'+(goals===1?'':'s')+'">'+('⚽'.repeat(goals))+'</span>';
+      if(assists) out+='<span class="assistMark" title="'+assists+' assist'+(assists===1?'':'s')+'">A'+(assists>1?'×'+assists:'')+'</span>';
+      return out;
+    };
+    $('onPitch').innerHTML=state.onPitch.map(p=>`<div class="player onfield">${esc(p)}${contributionFor(p)}${cardFor(p)}${state.everReturned.includes(p)?'<span class="tag return">RETURNED</span>':''}</div>`).join('');
+    const off=state.allPlayers.filter(p=>!state.onPitch.includes(p));
+    $('bench').innerHTML=off.map(p=>`<div class="player benched${state.dismissed.includes(p)?' sentoff':''}">${esc(p)}${contributionFor(p)}${cardFor(p)}</div>`).join('') || '<div class="small">Everyone is currently on the pitch</div>';
+    $('events').innerHTML=state.events.map(e=>`<div class="event"><div class="eventMin">${e.m}'</div><div class="eventIcon">${e.i}</div><div class="eventText"><b>${esc(e.t)}</b>${e.s?`<div class="eventSub">${esc(e.s)}</div>`:''}</div></div>`).join('');
+    $('updated').textContent='Last updated '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  }
+
+  function tab(which){
+    const lineup=which==='lineup'; $('lineupPanel').classList.toggle('hidden',!lineup); $('updatesPanel').classList.toggle('hidden',lineup); $('lineupTab').classList.toggle('active',lineup); $('updatesTab').classList.toggle('active',!lineup);
+  }
+  $('lineupTab').addEventListener('click',()=>tab('lineup')); $('updatesTab').addEventListener('click',()=>tab('updates'));
+
+  function interchange(returningOnly){
+    const off=state.allPlayers.filter(p=>!state.onPitch.includes(p));
+    let incoming;
+    if(returningOnly){ incoming=off.find(p=>state.everReturned.includes(p)===false && state.events.some(e=>e.t==='Interchange'&&e.s.includes(p+' off'))) || off[0]; }
+    else incoming=off[0];
+    const outgoing=state.onPitch.find(p=>p!=='Leo Osborne');
+    if(!incoming||!outgoing)return;
+    state.minute=Math.min(90,state.minute+1);
+    state.onPitch=state.onPitch.filter(p=>p!==outgoing);
+    state.onPitch.push(incoming);
+    const existing=state.onPitchDetails.find(p=>p.name===outgoing);
+    state.onPitchDetails=state.onPitchDetails.filter(p=>p.name!==outgoing&&p.name!==incoming);
+    state.onPitchDetails.push({name:incoming,x:existing?existing.x:50,y:existing?existing.y:50});
+    if(state.events.some(e=>e.t==='Interchange'&&e.s.includes(incoming+' off')) && !state.everReturned.includes(incoming)) state.everReturned.push(incoming);
+    state.events.unshift({m:state.minute,i:'🔄',t:'Interchange',s:`${incoming} on • ${outgoing} off`});
+  }
+
+  if(demo){
+    $('demoPanel').classList.remove('hidden');
+    document.querySelectorAll('[data-demo]').forEach(btn=>btn.addEventListener('click',()=>{
+      const a=btn.dataset.demo;
+      if(a==='goal'){state.minute=Math.min(90,state.minute+2);state.homeScore++;state.homeGoals.push({m:state.minute,p:'Alex Taylor'});state.events.unshift({m:state.minute,i:'⚽',t:'GOAL! Alex Taylor',s:`Perranporth ${state.homeScore}–${state.awayScore} ${state.away}`});state.status='LIVE'}
+      if(a==='oppgoal'){state.minute=Math.min(90,state.minute+2);state.awayScore++;state.awayGoals.push({m:state.minute,p:state.away});state.events.unshift({m:state.minute,i:'⚽',t:'Goal — '+state.away,s:`Perranporth ${state.homeScore}–${state.awayScore} ${state.away}`});state.status='LIVE'}
+      if(a==='interchange')interchange(false);
+      if(a==='return')interchange(true);
+      if(a==='half'){state.status='HT';state.minute=45;state.events.unshift({m:45,i:'⏸',t:'Half Time',s:`Perranporth ${state.homeScore}–${state.awayScore} ${state.away}`})}
+      if(a==='second'){state.status='LIVE';state.minute=46;state.events.unshift({m:46,i:'▶',t:'Second half underway',s:''})}
+      if(a==='full'){state.status='FT';state.minute=90;state.events.unshift({m:90,i:'🏁',t:'Full Time',s:`Perranporth ${state.homeScore}–${state.awayScore} ${state.away}`})}
+      render();
+    }));
+  } else {
+    function liveEventView(e){
+      const m=Number(e.minute||0);
+      if(e.type==='Goal' && String(e.team||'')!=='Opposition') return {m,i:'⚽',t:'GOAL! '+(e.player||'Perranporth'),s:e.secondaryPlayer?'Assist: '+e.secondaryPlayer:''};
+      if(e.type==='Conceded Goal' || (e.type==='Goal' && String(e.team||'')==='Opposition')) return {m,i:'⚽',t:'Goal — '+state.away,s:''};
+      if(e.type==='Substitution') return {m,i:'🔄',t:'Interchange',s:(e.secondaryPlayer||'Player')+' on • '+(e.player||'Player')+' off'};
+      if(e.type==='Yellow Card') return {m,i:'🟨',t:(e.player||'Player')+' booked',s:e.cardReason||''};
+      if(e.type==='Red Card') return {m,i:'🟥',t:(e.player||'Player')+' sent off',s:e.cardReason||''};
+      return null;
+    }
+
+    function applyLiveData(d){
+      if(!d || !d.live){
+        state.status='NONE'; state.minute=0; state.home='Perranporth'; state.away=''; state.competition=''; state.homeScore=0; state.awayScore=0;
+        state.allPlayers=[]; state.onPitch=[]; state.onPitchDetails=[]; state.formation=''; state.matchDate=''; state.kickoff=''; state.everReturned=[]; state.yellowCards=[]; state.redCards=[]; state.dismissed=[]; state.goalCounts={}; state.assistCounts={}; state.homeGoals=[]; state.awayGoals=[]; state.events=[];
+        render();
+        $('statusPill').textContent='NO LIVE MATCH'; $('statusPill').className='livepill none';
+        $('minute').textContent='No live match at the moment';
+        $('onPitch').innerHTML='<div class="empty">Lineup will appear when the match goes live.</div>';
+        $('bench').innerHTML='';
+        $('events').innerHTML='<div class="empty">No live updates yet.</div>';
+        return;
+      }
+
+      const c=d.clock||{};
+      state.status=c.finishedAt?'FT':c.onBreak?'HT':'LIVE';
+      state.minute=Math.max(0,Math.floor(Number(c.elapsedSeconds||0)/60));
+      state.home=d.homeTeam||'Perranporth'; state.away=d.awayTeam||''; state.competition=(d.match&&d.match.competition)||'';
+      state.formation=(d.match&&d.match.formation)||'';
+      state.matchDate=(d.match&&d.match.date)||'';
+      state.kickoff=(d.match&&d.match.kickoff)||'';
+      state.homeScore=Number(d.homeScore||0); state.awayScore=Number(d.awayScore||0);
+      state.onPitchDetails=(d.onPitch||[]).map(p=>typeof p==='string'?{name:p,x:0,y:0}:p).filter(p=>p&&p.name);
+      state.onPitch=state.onPitchDetails.map(p=>p.name);
+      state.dismissed=(d.dismissed||[]).filter(Boolean);
+      state.allPlayers=state.onPitch.concat((d.available||[]),state.dismissed).filter((v,i,a)=>a.indexOf(v)===i);
+      state.yellowCards=[...new Set((d.events||[]).filter(e=>e.type==='Yellow Card'&&e.player).map(e=>e.player))];
+      state.redCards=[...new Set((d.events||[]).filter(e=>e.type==='Red Card'&&e.player).map(e=>e.player))];
+      state.goalCounts={}; state.assistCounts={};
+      (d.events||[]).forEach(e=>{
+        const ours=e.type==='Goal' && String(e.team||'')!=='Opposition';
+        if(!ours)return;
+        const scorer=String(e.player||'').trim();
+        const assister=String(e.secondaryPlayer||'').trim();
+        if(scorer) state.goalCounts[scorer]=(state.goalCounts[scorer]||0)+1;
+        if(assister && !/^no assist$/i.test(assister) && assister!==scorer) state.assistCounts[assister]=(state.assistCounts[assister]||0)+1;
+      });
+
+      const interchangeEvents=(d.events||[]).filter(e=>e.type==='Substitution');
+      const returned=new Set();
+      const seenOn={};
+      interchangeEvents.forEach(e=>{
+        if(e.secondaryPlayer){
+          seenOn[e.secondaryPlayer]=(seenOn[e.secondaryPlayer]||0)+1;
+          if(seenOn[e.secondaryPlayer]>1) returned.add(e.secondaryPlayer);
+        }
+      });
+      state.everReturned=Array.from(returned);
+      const perranHome=state.home==='Perranporth';
+      state.homeGoals=[]; state.awayGoals=[];
+      (d.events||[]).forEach(e=>{
+        const isOurs=e.type==='Goal' && String(e.team||'')!=='Opposition';
+        const isOpp=e.type==='Conceded Goal' || (e.type==='Goal' && String(e.team||'')==='Opposition');
+        if(isOurs){(perranHome?state.homeGoals:state.awayGoals).push({m:Number(e.minute||0),p:e.player||'Perranporth'});}
+        if(isOpp){(perranHome?state.awayGoals:state.homeGoals).push({m:Number(e.minute||0),p:(d.match&&d.match.opponent)||'Opposition'});}
+      });
+      state.events=(d.events||[]).slice().reverse().map(liveEventView).filter(Boolean);
+      render();
+    }
+
+    const SPECTATOR_URL='https://hennzggqaquevqgiucqn.supabase.co/functions/v1/perranporth-matchday';
+    const SPECTATOR_KEY='sb_publishable_3ibkYwM0fFdHgKdGFIN5cQ_BT_WudUW';
+    const FORCE_APPS_SPECTATOR=new URLSearchParams(location.search).get('backend')==='apps';
+    const fallbackChannel='spectator_fallback_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+    const fallbackPending=new Map();
+    let fallbackSeq=0;
+    let spectatorBusy=false;
+    let spectatorHasLoaded=false;
+
+    function cleanupFallback_(id){
+      const p=fallbackPending.get(id);
+      if(!p)return;
+      clearTimeout(p.timer);
+      if(p.iframe&&p.iframe.parentNode)p.iframe.parentNode.removeChild(p.iframe);
+      fallbackPending.delete(id);
+    }
+
+    window.addEventListener('message',event=>{
+      const msg=event&&event.data;
+      if(!msg||msg.__pmd_match_bridge!==true||msg.channel!==fallbackChannel||!msg.id)return;
+      const p=fallbackPending.get(msg.id);
+      if(!p)return;
+      cleanupFallback_(msg.id);
+      if(msg.ok===true)p.resolve(msg.result);
+      else p.reject(new Error(msg.error||'Apps Script spectator fallback failed'));
+    });
+
+    function loadFromAppsScript_(){
+      return new Promise((resolve,reject)=>{
+        const id='spectator_fb_'+Date.now()+'_'+(++fallbackSeq);
+        const payload=JSON.stringify({action:'getPublicSpectatorData',args:[]});
+        const iframe=document.createElement('iframe');
+        iframe.setAttribute('aria-hidden','true');
+        iframe.tabIndex=-1;
+        iframe.style.position='fixed';
+        iframe.style.width='1px';
+        iframe.style.height='1px';
+        iframe.style.opacity='0';
+        iframe.style.pointerEvents='none';
+        iframe.style.border='0';
+        iframe.style.left='-9999px';
+        iframe.style.top='-9999px';
+        const timer=setTimeout(()=>{cleanupFallback_(id);reject(new Error('Apps Script spectator fallback timed out'));},15000);
+        fallbackPending.set(id,{resolve,reject,timer,iframe});
+        iframe.src=APP_URL+'?page=matchrpc&rid='+encodeURIComponent(id)+'&channel='+encodeURIComponent(fallbackChannel)+'&payload='+encodeURIComponent(payload)+'&_='+Date.now();
+        document.body.appendChild(iframe);
+      });
+    }
+
+    async function loadFromSupabase_(){
+      const controller=new AbortController();
+      const timer=setTimeout(()=>controller.abort(),8000);
+      try{
+        const res=await fetch(SPECTATOR_URL,{
+          method:'POST',
+          headers:{'Content-Type':'application/json','apikey':SPECTATOR_KEY},
+          body:JSON.stringify({action:'getPublicSpectatorData',args:[]}),
+          signal:controller.signal,
+          cache:'no-store'
+        });
+        const body=await res.json();
+        if(!res.ok||body.ok!==true)throw new Error(body.error||'Could not load live match');
+        return body.result;
+      }finally{
+        clearTimeout(timer);
+      }
+    }
+
+    async function loadLive(){
+      if(spectatorBusy)return;
+      spectatorBusy=true;
+      try{
+        try{
+          const data=FORCE_APPS_SPECTATOR
+            ? await loadFromAppsScript_()
+            : await loadFromSupabase_();
+          applyLiveData(data);
+          spectatorHasLoaded=true;
+        }catch(err){
+          // Never replace good live data with a transient backend error.
+          if(!spectatorHasLoaded){
+            $('statusPill').textContent='CONNECTION ERROR';
+            $('statusPill').className='livepill none';
+            $('minute').textContent=(err&&err.message)||'Could not load live match';
+          }
+        }
+      }finally{
+        spectatorBusy=false;
+      }
+    }
+
+    $('statusPill').textContent='LOADING'; $('statusPill').className='livepill none';
+    $('minute').textContent='Checking for a live match…';
+    loadLive();
+    setInterval(loadLive,10000);
+  }
+  if(demo) render();
+})();
+</script>
+</body>
+</html>
