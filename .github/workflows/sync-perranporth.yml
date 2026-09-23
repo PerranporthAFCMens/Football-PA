@@ -1,4 +1,5 @@
 name: Sync Perranporth app
+# Source app remains separate; this workflow publishes the public /Perranporth path.
 
 on:
   workflow_dispatch:
