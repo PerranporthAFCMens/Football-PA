@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Football PA</title>
+<style>body{font-family:system-ui,-apple-system,sans-serif;margin:40px;color:#10202f}a{color:#1687ff}</style>
+</head>
+<body>
+<script>
+(function(){
+  const path=location.pathname;
+  const match=path.match(/^\/perranporth(\/.*)?$/i);
+  if(match){
+    const rest=match[1]||'/';
+    location.replace('/Perranporth'+rest+location.search+location.hash);
+    return;
+  }
+})();
+</script>
+<h1>Page not found</h1>
+<p><a href="/">Return to Football PA</a></p>
+</body>
+</html>
