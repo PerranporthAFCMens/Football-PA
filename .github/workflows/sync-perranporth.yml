@@ -1,5 +1,5 @@
 name: Sync Perranporth app
-# Source app remains separate; this workflow publishes the public /Perranporth path.
+# Source app remains separate; this workflow publishes the public /Perranporth path. Permission-aware Control Centre sync.
 
 on:
   workflow_dispatch:
