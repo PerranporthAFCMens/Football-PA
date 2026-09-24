@@ -1,5 +1,5 @@
 name: Sync Perranporth app
-# Squad share sync 2
+# Subs tracker sync
 
 on:
   workflow_dispatch:
