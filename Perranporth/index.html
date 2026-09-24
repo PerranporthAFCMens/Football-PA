@@ -1,237 +1,116 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-  <title>Perranporth Control Centre</title>
-  <base target="_top">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0b67d1">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Perranporth">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#eef3f8">
+<title>Football PA</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./core-client.js"></script>
+<script src="./core-context.js"></script>
+<script src="./core-nav.js"></script>
+<link rel="stylesheet" href="./core-ui.css">
 <style>
-    :root{--blue:#0b67d1;--blue2:#004da8;--ink:#15202b;--muted:#6c7a89;--bg:#eef3f8;--card:#fff;--line:#dbe4ec}
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#eaf2fb 0,#f7f9fb 45%,#eef3f8 100%);color:var(--ink)}
-    .wrap{max-width:900px;margin:0 auto;padding:28px 16px 44px}
-    .hero{background:linear-gradient(135deg,#0a4f9e,#1183ea);color:#fff;border-radius:22px;padding:28px 24px;box-shadow:0 12px 28px rgba(19,70,120,.18);display:flex;align-items:center;gap:18px;position:relative}
-    .badge{width:78px;height:78px;border-radius:50%;background:#fff;object-fit:contain;padding:5px;box-shadow:0 4px 12px rgba(0,0,0,.18)}
-    h1{font-size:28px;margin:0 0 5px}.sub{opacity:.88;font-size:15px}
-    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:18px}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:21px;box-shadow:0 6px 18px rgba(30,55,80,.07);display:flex;flex-direction:column;min-height:220px}
-    .icon{font-size:34px;margin-bottom:12px}h2{font-size:20px;margin:0 0 8px}.desc{color:var(--muted);line-height:1.45;font-size:14px;flex:1}
-    .btn{display:block;text-decoration:none;text-align:center;background:var(--blue);color:#fff;font-weight:700;padding:13px 14px;border-radius:12px;margin-top:18px}.btn:hover{background:var(--blue2)}
-    .footer{text-align:center;color:var(--muted);font-size:12px;margin-top:18px}
-    .hidden{display:none!important}
-    .loginWrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-    .loginCard{width:100%;max-width:390px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:0 14px 40px rgba(19,70,120,.14);text-align:center}
-    .loginCard .badge{width:72px;height:72px;margin-bottom:10px}
-    .loginCard input{width:100%;min-height:50px;border:1px solid #cad7e2;border-radius:12px;padding:12px 14px;font-size:18px;text-align:center;letter-spacing:.08em;margin-top:12px}
-    .loginCard button{width:100%;border:0;border-radius:12px;min-height:50px;background:var(--blue);color:#fff;font-size:16px;font-weight:800;margin-top:10px;cursor:pointer}
-    .loginError{min-height:18px;color:#a52a22;font-size:13px;margin-top:9px}
-    .heroActions{margin-left:auto;display:flex;gap:8px;align-items:center}
-    .logoutBtn{border:1px solid #ffffff55;border-radius:11px;background:#ffffff20;color:#fff;padding:9px 11px;font-weight:800;cursor:pointer}
-    .refreshBtn{text-decoration:none;margin-left:auto;flex:0 0 auto;width:44px;height:44px;border:1px solid #ffffff55;border-radius:50%;background:#ffffff20;color:#fff;font-size:25px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}.refreshBtn:active{transform:scale(.96);background:#ffffff32}
-    @media(max-width:720px){.grid{grid-template-columns:1fr}.card{min-height:0}.hero{padding:22px 18px}.badge{width:64px;height:64px}h1{font-size:23px}}
-  </style>
-  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
-  <link rel="icon" type="image/png" href="./apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.webmanifest">
-  <script src="./bridge-live.js?v=20260923-controlcentre-auth1"></script>
-  <script src="./button-feedback.js" defer></script>
+.home-shell{display:grid;gap:12px}.hero-match{padding:20px;overflow:hidden;position:relative}.hero-match:after{content:"";position:absolute;width:180px;height:180px;border-radius:50%;right:-75px;top:-75px;background:color-mix(in srgb,var(--blue) 12%,transparent);pointer-events:none}.hero-kicker{font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}.hero-date{margin-top:7px;font-size:14px;color:var(--muted);font-weight:700}.hero-opponent{margin:7px 0 3px;font-size:30px;line-height:1.05;font-weight:900;letter-spacing:-.02em}.hero-meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.hero-pill{font-size:11px;font-weight:900;border-radius:999px;padding:7px 10px;background:#eef4fb;color:var(--blue)}.hero-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}.hero-actions .btn{min-width:130px}.record-card{padding:11px 8px}.record-strip{display:grid;grid-template-columns:repeat(6,1fr)}.record-item{text-align:center;padding:7px 4px;border-left:1px solid #e7edf3}.record-item:first-child{border-left:0}.record-item b{display:block;font-size:20px;line-height:1}.record-item span{display:block;margin-top:5px;font-size:9px;font-weight:900;color:var(--muted);letter-spacing:.08em}.home-lower{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(230px,.7fr);gap:12px}.home-panel{padding:16px}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}.panel-head h2{margin:0;font-size:18px}.panel-head a{font-size:12px;font-weight:800;text-decoration:none;color:var(--blue)}.match-list{display:grid}.match-row{display:grid;grid-template-columns:46px minmax(0,1fr) auto;gap:10px;align-items:center;padding:11px 0;border-top:1px solid #e9eef3}.match-row:first-child{border-top:0}.match-result{font-size:18px;font-weight:900;text-align:center}.match-result small{display:block;font-size:9px;color:var(--muted);margin-top:2px}.match-row strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px}.match-row small{display:block;color:var(--muted);font-size:11px;margin-top:2px}.mini-date{text-align:right;font-size:11px;color:var(--muted);font-weight:800}.team-card{display:grid;gap:12px}.team-big{font-size:34px;font-weight:900;line-height:1}.team-label{font-size:11px;color:var(--muted);font-weight:800;margin-top:4px}.empty{padding:12px 0;color:var(--muted);font-size:13px}.preview-row{margin-bottom:12px}
+@media(max-width:720px){html,body{max-width:100%;overflow-x:hidden}.fpa-page,#app,.home-shell,.home-lower,.home-panel,.record-card,.record-strip,.match-list,.match-row,.team-card{min-width:0;max-width:100%}.hero-match{padding:17px}.hero-opponent{font-size:25px;overflow-wrap:anywhere}.hero-actions{display:grid;grid-template-columns:1fr}.hero-actions .btn{width:100%;min-width:0}.home-lower{grid-template-columns:minmax(0,1fr)}.record-strip{grid-template-columns:repeat(3,minmax(0,1fr))}.record-item{border-top:1px solid #e7edf3}.record-item:nth-child(-n+3){border-top:0}.record-item:nth-child(4){border-left:0}.record-item b{font-size:18px}.record-item span{font-size:8px}.home-panel{padding:14px;overflow:hidden}.match-row{grid-template-columns:42px minmax(0,1fr) auto;gap:8px}.match-row>div{min-width:0}.match-row strong{font-size:13px}.mini-date{font-size:10px;white-space:nowrap}.fpa-preview{overflow-wrap:anywhere}}
+</style>
 </head>
-<body onload="bootControlCentre()">
-  <div id="loginWrap" class="loginWrap">
-    <div class="loginCard">
-      <img class="badge" src="./apple-touch-icon.png" alt="Perranporth AFC">
-      <h1>Management Login</h1>
-      <div class="sub" style="color:var(--muted)">Perranporth AFC · Control Centre</div>
-      <input id="pinInput" type="password" inputmode="numeric" autocomplete="current-password" placeholder="Management PIN" aria-label="Management PIN">
-      <button id="loginBtn" type="button" onclick="loginControlCentre()">Open Control Centre</button>
-      <div id="loginError" class="loginError"></div>
-    </div>
-  </div>
-
-  <div id="controlCentre" class="wrap hidden">
-    <div class="hero">
-      <img class="badge" src="https://www.perranporthafc.co.uk/wp-content/themes/sharkfin-1-4/images/perranporth-afc-large.jpg" alt="Perranporth AFC">
-      <div>
-        <h1>Perranporth Control Centre</h1>
-        <div class="sub">2026/27 First Team</div>
-      </div>
-      <div class="heroActions">
-        <a class="refreshBtn" href="./" target="_top" aria-label="Refresh" title="Refresh">↻</a>
-        <button class="logoutBtn" type="button" onclick="logoutControlCentre()">Log out</button>
-      </div>
-    </div>
-
-    <div class="grid">
-      <div class="card" data-access-key="match">
-        <div class="icon">⚽</div>
-        <h2>Match Centre</h2>
-        <div class="desc">Squads, lineup, live match clock, events, substitutions, past matches and player stats.</div>
-        <a class="btn" href="./match.html" target="_top">Open Match Centre</a>
-      </div>
-
-      <div class="card" data-access-key="voting">
-        <div class="icon">🗳️</div>
-        <h2>Voting Centre</h2>
-        <div class="desc">Open or close 3–2–1 voting, copy the player voting link and view the latest results.</div>
-        <a class="btn" href="./voting.html" target="_top">Open Voting Centre</a>
-      </div>
-
-      <div class="card" data-access-key="subs">
-        <div class="icon">💷</div>
-        <h2>Subs Tracker</h2>
-        <div class="desc">See who owes match subs, review by player or by match, and mark payments as paid.</div>
-        <a class="btn" href="./subs.html?v=20260920-sessionfix3" target="_top">Open Subs Tracker</a>
-      </div>
-
-      <div class="card" data-access-key="dashboard">
-        <div class="icon">📊</div>
-        <h2>Season Dashboard</h2>
-        <div class="desc">Live 2026/27 season data, scoring trends, player contributions, goal locations and match analysis.</div>
-        <a class="btn" href="./dashboard.html">Open Season Dashboard</a>
-      </div>
-
-      <div class="card" data-access-key="minutes">
-        <div class="icon">⏱️</div>
-        <h2>Player Minutes</h2>
-        <div class="desc">Season appearances, starts, substitute appearances and minutes played, with a match-by-match breakdown.</div>
-        <a class="btn" href="./minutes.html" target="_top">Open Player Minutes</a>
-      </div>
-
-      <div class="card" data-access-key="ghost">
-        <div class="icon">👻</div>
-        <h2>Ghost Mode</h2>
-        <div class="desc">Management-only read-only view of any player's portal. No player PIN needed.</div>
-        <a class="btn" href="./ghost.html" target="_top">Open Ghost Mode</a>
-      </div>
-
-      <div class="card">
-        <div class="icon">👤</div>
-        <h2>Player Portal</h2>
-        <div class="desc">Players can view their own stats, see a simplified team dashboard and vote when voting is open.</div>
-        <a class="btn" href="./player.html" target="_top">Open Player Portal</a>
-      </div>
-
-      <div class="card" data-access-key="player_pins">
-        <div class="icon">🔐</div>
-        <h2>Player PINs</h2>
-        <div class="desc">Reset a player's Portal PIN and issue a temporary 4-digit PIN when they are locked out or have forgotten it.</div>
-        <a class="btn" href="./pins.html" target="_top">Open Player PINs</a>
-      </div>
-
-      <div class="card" data-access-key="admin">
-        <div class="icon">🛡️</div>
-        <h2>Admin Panel</h2>
-        <div class="desc">Grant or remove management access, choose roles, link player access, set/reset management PINs and revoke sessions.</div>
-        <a class="btn" href="./admin-panel.html" target="_top">Open Admin Panel</a>
-      </div>
-
-      <div class="card">
-        <div class="icon">📺</div>
-        <h2>Live Spectator Board</h2>
-        <div class="desc">Public live-match view with score, clock, goalscorers, cards, interchanges, current lineup and match updates. No login required.</div>
-        <a class="btn" href="./live.html" target="_top">Open Live Spectator Board</a>
-      </div>
-    </div>
-
-    <div class="footer">One link for all management tools</div>
-  </div>
+<body>
+<main class="fpa-page">
+<div id="preview" class="fpa-preview preview-row hidden"><span>DEV PREVIEW · Viewing this team as a customer</span> <button id="exitPreview" class="btn" style="float:right;min-height:0;padding:2px 6px;background:transparent;color:#1357A6">Exit preview</button></div>
+<div id="loading" class="fpa-card" style="padding:28px;text-align:center">Loading your Football PA club…</div>
+<div id="app" class="hidden"><div id="fixtureNotice" class="fpa-preview hidden" style="background:#eef4fb;border-color:#bfd4ea;color:#102033"></div>
+<div class="home-shell">
+  <section id="nextMatch" class="fpa-card hero-match"></section>
+  <section class="fpa-card record-card"><div class="home-section-title"><h2>Season at a glance</h2><span>⚽ Current season</span></div><div id="stats" class="record-strip"></div></section>
+  <section class="quick-actions" aria-label="Quick actions">
+    <a id="homeShortcut1" class="home-shortcut" href="#"></a>
+    <a id="homeShortcut2" class="home-shortcut" href="#"></a>
+  </section>
+  <section class="home-lower">
+    <article class="fpa-card home-panel"><div class="panel-head"><h2>Recent results</h2></div><div id="recent"></div></article>
+    <article class="fpa-card home-panel"><div class="panel-head"><h2>Coming up</h2></div><div id="teamSummary"></div></article>
+  </section>
+</div>
+</div>
+</main>
 <script>
-const CONTROL_AUTH_KEY='pmd_admin_auth';
-let CONTROL_TOKEN='';
+const sb=FootballPAClient;
+const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const final=f=>['ft','full_time','completed','complete','finished'].includes(String(f.status||'').toLowerCase());
+const fmtDate=v=>v?new Date(v).toLocaleDateString('en-GB',{day:'numeric',month:'short'}):'';
+const fmtKick=v=>{if(!v)return'Not set';const d=new Date(v);return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})};
+function fixtureDateHasPassed(v){if(!v)return false;const d=new Date(v);if(Number.isNaN(d.getTime()))return false;d.setHours(23,59,59,999);return d.getTime()<Date.now()}
+function fixtureChangeKey(id,kind,changes){return String(id||'')+'|'+String(kind||'changed')+'|'+JSON.stringify(changes||[])}
+function ourScore(f){const v=String(f.venue||'').toLowerCase();if(v==='away'||v==='a')return Number(f.away_score??0);return Number(f.home_score??0)}
+function theirScore(f){const v=String(f.venue||'').toLowerCase();if(v==='away'||v==='a')return Number(f.home_score??0);return Number(f.away_score??0)}
+function venueLabel(v){v=String(v||'').toLowerCase();return v==='home'||v==='h'?'HOME':v==='away'||v==='a'?'AWAY':'NEUTRAL'}
+const HOME_SHORTCUTS={
+ training:{label:'Training Log',desc:'Sessions and attendance',path:'/players.html',icon:'<path d="M7 4h10v16H7z"/><path d="M9 4V2h6v2"/><path d="m10 12 2 2 4-5"/>'},
+ dashboard:{label:'Dashboard',desc:'Performance and player stats',path:'/dashboard.html',icon:'<path d="M4 19V10"/><path d="M10 19V6"/><path d="M16 19v-5"/><path d="M21 19H3"/>'},
+ subs:{label:'Subs Tracker',desc:'Payments and match subs',path:'/subs.html',icon:'<circle cx="8" cy="12" r="3"/><circle cx="16" cy="12" r="3"/><path d="M11 8h5a3 3 0 0 1 0 6h-5"/>'},
+ fixtures:{label:'Fixtures',desc:'Matches and results',path:'/fixtures.html',icon:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/>'},
+ availability:{label:'Availability',desc:'Who is in for the next match',path:'/availability.html',icon:'<path d="m5 12 4 4L19 6"/><path d="M4 20h16"/>'},
+ players:{label:'Players',desc:'Squad and player details',path:'/players.html',extra:'view=players',icon:'<circle cx="9" cy="8" r="3"/><path d="M3 20c0-4 2-7 6-7s6 3 6 7"/><path d="M16 7a3 3 0 0 1 0 6M17 14c2 .8 3.5 2.7 4 5"/>'},
+ match:{label:'Match Centre',desc:'Lineup, events and matchday',path:'/match-centre.html',icon:'<circle cx="12" cy="12" r="8"/><path d="m12 8 3 2-1 4h-4l-1-4z"/><path d="M7 8 4 10M17 8l3 2M8 16l-1 3M16 16l1 3"/>'},
+ voting:{label:'Voting Centre',desc:'MOTM and team votes',path:'/voting.html',icon:'<path d="M8 4h8v4a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 12v5M8 21h8M9 17h6"/>'}
+};
+function shortcutAvailable(key,ctx){if(key==='subs')return ctx.features?.subs_finance===true&&!!ctx.access?.can_manage_subs;if(key==='voting')return ctx.features?.voting===true&&!!ctx.access?.can_manage_voting;if(key==='match')return ctx.features?.match_centre!==false&&!!ctx.access?.can_manage_match;if(key==='players')return ctx.features?.players!==false;if(key==='training')return ctx.features?.training!==false;if(key==='availability')return ctx.features?.availability!==false;return true}
+function renderHomeShortcut(el,key,ctx,fallback){let use=shortcutAvailable(key,ctx)&&HOME_SHORTCUTS[key]?key:fallback;if(!shortcutAvailable(use,ctx)||!HOME_SHORTCUTS[use])use='fixtures';const item=HOME_SHORTCUTS[use];el.href=ctx.href(item.path,item.extra||'');el.innerHTML='<span class="shortcut-icon"><svg viewBox="0 0 24 24" aria-hidden="true">'+item.icon+'</svg></span><span class="shortcut-copy"><b>'+esc(item.label)+'</b><small>'+esc(item.desc)+'</small></span><span class="shortcut-arrow">›</span>'}
+function sideInfo(row,team,club){const stop=/\b(u\d+|girls|boys|women|men|mixed|youth|afc|fc|first|team|reserves?|seconds?|thirds?)\b/g,norm=s=>String(s||'').toLowerCase().replace(stop,' ').replace(/[^a-z0-9]+/g,' ').trim(),tt=norm(team.name).split(' ').filter(Boolean),ct=norm(club.name).split(' ').filter(Boolean),score=s=>{const n=' '+norm(s)+' ';let z=0;for(const t of tt)if(n.includes(' '+t+' '))z+=4;for(const t of ct)if(n.includes(' '+t+' '))z+=1;return z},hs=score(row.home),as=score(row.away);return hs>as&&hs>0?{venue:'home',opponent:row.away}:as>hs&&as>0?{venue:'away',opponent:row.home}:{venue:'neutral',opponent:null}}
+async function checkFixtureUpdates(ctx){
+ const s=ctx.settings||{};if(!ctx.access?.can_manage_fixtures||!s.fixture_sync_on_login||!s.fixture_source_url)return;
+ try{
+  const resp=await fetch('https://hennzggqaquevqgiucqn.supabase.co/functions/v1/fa-fulltime-preview',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+ctx.session.access_token,'apikey':'sb_publishable_3ibkYwM0fFdHgKdGFIN5cQ_BT_WudUW'},body:JSON.stringify({url:s.fixture_source_url,teamId:ctx.team.id})});
+  const data=await resp.json();if(!data.ok)return;
+  const {data:existing}=await sb.from('fixtures').select('external_id,opponent,venue,kick_off,status').eq('team_id',ctx.team.id).eq('external_source','fa_full_time');
+  const map=new Map((existing||[]).map(x=>[String(x.external_id),x])),seen=new Set(),ignored=new Set(Array.isArray(s.fixture_sync_ignored_updates)?s.fixture_sync_ignored_updates:[]);let changes=0;
+  const countIfNew=(id,kind,diffs)=>{if(!ignored.has(fixtureChangeKey(id,kind,diffs)))changes++};
+  for(const r of data.rows||[]){
+   const id=String(r.externalId||r.id||'');if(!id)continue;seen.add(id);
+   const old=map.get(id);
+   if(!old){countIfNew(id,'new',[{old:'Not in Football PA',new:[r.date||'',r.time||''].filter(Boolean).join(' ')}]);continue}
+   const side=(r.ourVenue&&r.opponent)?{venue:r.ourVenue,opponent:r.opponent}:sideInfo(r,ctx.team,ctx.club),d=r.date?new Date(r.date+'T'+(r.time||'12:00')+':00'):null,diffs=[];
+   if(d&&!Number.isNaN(d.getTime())){const od=new Date(old.kick_off);if(od.toDateString()!==d.toDateString())diffs.push({old:'Date: '+fmtKick(old.kick_off).split(' ').slice(0,3).join(' '),new:'Date: '+fmtKick(d).split(' ').slice(0,3).join(' ')});if(od.getHours()!==d.getHours()||od.getMinutes()!==d.getMinutes())diffs.push({old:'Time: '+od.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),new:'Time: '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})})}
+   if(side.opponent&&old.opponent!==side.opponent)diffs.push({old:'Opponent: '+old.opponent,new:'Opponent: '+side.opponent});
+   if(side.opponent&&old.venue!==side.venue)diffs.push({old:'Venue: '+old.venue,new:'Venue: '+side.venue});
+   if(old.status==='cancelled'&&!/cancel/i.test(r.status||''))diffs.push({old:'Status: Cancelled',new:'Status: Scheduled'});
+   if(old.status!=='cancelled'&&/cancel/i.test(r.status||''))diffs.push({old:'Status: '+old.status,new:'Status: Cancelled'});
+   if(diffs.length)countIfNew(id,'changed',diffs);
+  }
+  for(const old of existing||[])if(old.external_id&&!seen.has(String(old.external_id))&&old.status!=='cancelled'&&!fixtureDateHasPassed(old.kick_off)){const diffs=[{old:fmtKick(old.kick_off)+' · '+old.opponent,new:'Mark as cancelled'}];countIfNew(old.external_id,'missing',diffs)}
+  await sb.from('team_settings').update({fixture_last_checked_at:new Date().toISOString()}).eq('team_id',ctx.team.id);
+  const n=$('fixtureNotice');if(changes){n.innerHTML='<b>'+changes+' fixture update'+(changes===1?'':'s')+' found.</b> <a href="'+ctx.href('/fixture-sync.html')+'">Review changes</a>';n.classList.remove('hidden')}else n.classList.add('hidden');
+ }catch(e){}
+}
 
-function readControlSession(){
-  try{
-    const raw=localStorage.getItem(CONTROL_AUTH_KEY)||'';
-    if(!raw)return null;
-    try{
-      const parsed=JSON.parse(raw);
-      if(parsed&&parsed.token)return parsed;
-    }catch(e){}
-    return {token:raw,expiresAt:Date.now()+86400000};
-  }catch(e){return null}
-}
-function saveControlSession(session){
-  try{localStorage.setItem(CONTROL_AUTH_KEY,JSON.stringify(session))}catch(e){}
-}
-function clearControlSession(){
-  try{localStorage.removeItem(CONTROL_AUTH_KEY)}catch(e){}
-}
-function showControlLogin(message){
-  document.getElementById('controlCentre').classList.add('hidden');
-  document.getElementById('loginWrap').classList.remove('hidden');
-  document.getElementById('loginError').textContent=message||'';
-  CONTROL_TOKEN='';
-}
-function applyControlAccess(context){
-  const tiles=new Set((context?.tiles||[]).map(String));
-  const all=tiles.has('*');
-  document.querySelectorAll('[data-access-key]').forEach(card=>{
-    card.classList.toggle('hidden',!all&&!tiles.has(card.dataset.accessKey));
-  });
-}
-async function openControlCentreForToken(token){
-  const context=await pmdCall('getManagementContext',token);
-  applyControlAccess(context);
-  document.getElementById('loginWrap').classList.add('hidden');
-  document.getElementById('controlCentre').classList.remove('hidden');
-  try{await pmdCall('recordManagementPageOpen',token,'control_centre')}catch(e){}
-}
-function showControlCentre(){
-  document.getElementById('loginWrap').classList.add('hidden');
-  document.getElementById('controlCentre').classList.remove('hidden');
-}
-async function bootControlCentre(){
-  const session=readControlSession();
-  if(session&&session.token&&(!session.expiresAt||session.expiresAt>Date.now())){
-    try{
-      if(await pmdCall('verifyPin',session.token)){
-        CONTROL_TOKEN=session.token;
-        await openControlCentreForToken(CONTROL_TOKEN);
-        return;
-      }
-    }catch(e){}
-    clearControlSession();
-  }
-  showControlLogin();
-}
-async function loginControlCentre(){
-  const pin=document.getElementById('pinInput').value.trim();
-  const button=document.getElementById('loginBtn');
-  const error=document.getElementById('loginError');
-  if(!pin){error.textContent='Enter your management PIN.';return}
-  button.disabled=true;
-  button.textContent='Checking…';
-  error.textContent='';
-  try{
-    const session=await pmdCall('createAdminSession',pin);
-    if(!session||!session.token)throw new Error('Login failed');
-    saveControlSession(session);
-    CONTROL_TOKEN=session.token;
-    await openControlCentreForToken(CONTROL_TOKEN);
-  }catch(e){
-    clearControlSession();
-    CONTROL_TOKEN='';
-    error.textContent=e?.message||'Access denied';
-  }finally{
-    button.disabled=false;
-    button.textContent='Open Control Centre';
-  }
-}
-async function logoutControlCentre(){
-  const token=CONTROL_TOKEN||readControlSession()?.token||'';
-  clearControlSession();
-  CONTROL_TOKEN='';
-  try{if(token)await pmdCall('logoutAdminSession',token)}catch(e){}
-  document.getElementById('pinInput').value='';
-  showControlLogin();
-}
-document.addEventListener('keydown',e=>{
-  if(e.key==='Enter'&&!document.getElementById('loginWrap').classList.contains('hidden'))loginControlCentre();
-});
+async function boot(){try{
+ const ctx=await FootballPAContext.resolve();const {team,club}=ctx;
+ FootballPANav.mount({teamId:team.id});
+ if(club.primary_colour)document.documentElement.style.setProperty('--blue',club.primary_colour);
+ renderHomeShortcut($('homeShortcut1'),ctx.settings?.home_shortcut_1||'training',ctx,'training');
+ renderHomeShortcut($('homeShortcut2'),ctx.settings?.home_shortcut_2||'dashboard',ctx,'dashboard');
+ if(ctx.preview){$('preview').classList.remove('hidden');$('exitPreview').onclick=()=>location.href='./dev-team.html?id='+encodeURIComponent(team.id)}
+ let fixtureQuery=sb.from('fixtures').select('id,opponent,venue,competition,status,home_score,away_score,kick_off,include_in_stats').eq('team_id',team.id).order('kick_off');if(ctx.season?.id)fixtureQuery=fixtureQuery.eq('season_id',ctx.season.id);
+ const fr=await fixtureQuery;
+ if(fr.error)throw fr.error;
+ const fixtures=fr.data||[],done=fixtures.filter(f=>final(f)&&f.include_in_stats!==false);
+ let w=0,d=0,gf=0,ga=0;for(const f of done){const a=ourScore(f),b=theirScore(f);gf+=a;ga+=b;if(a>b)w++;else if(a===b)d++}
+ const vals=[[done.length,'P'],[w,'W'],[d,'D'],[gf,'GF'],[ga,'GA'],[(gf-ga>0?'+':'')+(gf-ga),'GD']];
+ $('stats').innerHTML=vals.map(v=>'<div class="record-item"><b>'+v[0]+'</b><span>'+v[1]+'</span></div>').join('');
+ const now=Date.now(),ordered=[...fixtures].sort((a,b)=>new Date(a.kick_off)-new Date(b.kick_off));
+ const upcoming=ordered.filter(f=>!final(f)&&new Date(f.kick_off).getTime()>=now-21600000);
+ const next=upcoming[0];
+ if(next){
+   $('nextMatch').innerHTML='<div class="hero-kicker">Next match</div><div class="hero-date">'+esc(new Date(next.kick_off).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'}))+'</div><div class="hero-opponent">'+esc(next.opponent)+'</div><div class="hero-meta"><span class="hero-pill">'+venueLabel(next.venue)+'</span><span class="hero-pill">'+esc(next.competition||'Fixture')+'</span></div><div class="hero-actions"><button class="btn primary" id="openNextMatch">Open Match Centre</button></div>';
+   $('openNextMatch').onclick=()=>location.href=ctx.href('/match-centre.html','fixture='+encodeURIComponent(next.id));
+ }else{
+   $('nextMatch').innerHTML='<div class="hero-kicker">Next match</div><div class="hero-opponent" style="font-size:23px">No upcoming fixture</div><div class="hero-date">Add or sync fixtures to show the next game here.</div>';
+ }
+ const recent=[...done].sort((a,b)=>new Date(b.kick_off)-new Date(a.kick_off)).slice(0,3);
+ $('recent').innerHTML=recent.length?recent.map(f=>'<div class="match-row" data-fixture="'+f.id+'"><div class="match-result result-score">'+ourScore(f)+'–'+theirScore(f)+'<small>FT</small></div><div><strong>'+esc(f.opponent)+'</strong><small>'+esc(f.competition||'Fixture')+' · '+venueLabel(f.venue)+'</small></div><div class="mini-date">'+fmtDate(f.kick_off)+'</div></div>').join(''):'<div class="empty">No completed matches yet.</div>';
+ document.querySelectorAll('[data-fixture]').forEach(r=>r.onclick=()=>location.href=ctx.href('/match-centre.html','fixture='+encodeURIComponent(r.dataset.fixture)));
+ const comingUp=upcoming.slice(next?1:0,4);$('teamSummary').innerHTML=comingUp.length?comingUp.map(f=>'<div class="match-row" data-upcoming="'+f.id+'"><div class="match-result venue-result"><small>'+venueLabel(f.venue)+'</small></div><div><strong>'+esc(f.opponent)+'</strong><small>'+esc(f.competition||'Fixture')+'</small></div><div class="mini-date">'+fmtDate(f.kick_off)+'</div></div>').join(''):'<div class="empty">No further fixtures scheduled.</div>';document.querySelectorAll('[data-upcoming]').forEach(r=>r.onclick=()=>location.href=ctx.href('/match-centre.html','fixture='+encodeURIComponent(r.dataset.upcoming)));
+ $('loading').classList.add('hidden');$('app').classList.remove('hidden');checkFixtureUpdates(ctx);
+}catch(e){$('loading').innerHTML='<b>Could not load Football PA.</b><br><span class="fpa-muted">'+esc(e.message)+'</span>'}}
+sb.auth.onAuthStateChange((e,s)=>{if(e==='SIGNED_OUT'||!s)location.replace('./login.html')});boot();
 </script>
-</body>
-</html>
+</body></html>

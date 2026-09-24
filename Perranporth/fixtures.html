@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#eef3f8">
+<title>Fixtures · Football PA</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./core-client.js"></script>
+<script src="./core-context.js"></script>
+<script src="./core-nav.js"></script>
+<link rel="stylesheet" href="./core-ui.css">
+<style>
+.fixtures-page{display:grid;gap:12px}.toolbar{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.toolbar h1{margin:0;font-size:26px}.filters{display:flex;gap:8px;flex-wrap:wrap}.filters select{min-width:130px}.fixture-card{padding:15px}.fixture-list{display:grid;gap:10px}.fixture-item{display:grid;grid-template-columns:62px minmax(0,1fr);gap:12px;border:1px solid #dfe7ee;border-radius:16px;padding:13px;background:#fff}.fixture-date{align-self:start;text-align:center;border-right:1px solid #e6edf3;padding:4px 12px 4px 0}.fixture-date b{display:block;font-size:24px;line-height:1;font-weight:900;color:#102033}.fixture-date span{display:block;font-size:10px;color:var(--muted);font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-top:5px}.fixture-body{min-width:0}.fixture-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.fixture-main{min-width:0;flex:1}.fixture-main strong{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:16px;line-height:1.15}.fixture-meta{display:flex;flex-wrap:wrap;gap:5px 7px;color:var(--muted);font-size:11px;font-weight:700;margin-top:5px}.fixture-location{display:flex;align-items:flex-start;gap:6px;margin-top:8px;color:#536272;font-size:12px;font-weight:700;line-height:1.3}.fixture-location .pin{flex:0 0 auto}.fixture-location span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis}.fixture-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:12px}.pill{display:inline-flex;align-items:center;justify-content:center;min-width:66px;border-radius:999px;padding:7px 10px;font-size:10px;font-weight:900;letter-spacing:.06em}.pill.home{background:#e7f5ec;color:#147a3e;border:1px solid #b9dfc7}.pill.away{background:#fff2df;color:#a25a00;border:1px solid #f1d09a}.pill.neutral{background:#eef1f5;color:#5d6977;border:1px solid #d7dee6}.score{font-weight:900;font-size:17px;color:#102033;white-space:nowrap}.fixture-action{display:inline-flex;align-items:center;justify-content:center;min-height:36px;border-radius:10px;padding:8px 11px;font-size:12px;font-weight:900;text-decoration:none;border:1px solid #d9e3ec;background:#fff;color:#102033}.fixture-action.primary{background:var(--blue);border-color:var(--blue);color:#fff}.fixture-action.secondary{background:#f5f8fb}.empty{padding:24px;text-align:center;color:var(--muted)}.editor{padding:16px}.editor h2{margin:0 0 12px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{display:grid;gap:5px}.field label{font-size:11px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}.field input,.field select{width:100%;border:1px solid var(--line);border-radius:11px;padding:11px 12px;font:inherit;background:#fff}.field.full{grid-column:1/-1}.editor-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:13px}.statusline{font-size:12px;color:var(--muted);margin-top:8px}.section-title{font-size:15px;font-weight:900;margin:4px 0 8px}.hidden{display:none!important}
+@media(max-width:620px){.fixture-item{grid-template-columns:54px minmax(0,1fr);padding:12px}.fixture-date{padding-right:9px}.fixture-date b{font-size:22px}.fixture-main strong{font-size:15px}.fixture-actions{gap:6px}.fixture-action{min-height:34px;padding:7px 10px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.toolbar{align-items:flex-start}.toolbar h1{font-size:23px}}
+</style>
+</head>
+<body>
+<main class="fpa-page">
+<div id="loading" class="fpa-card" style="padding:26px;text-align:center">Loading fixtures…</div>
+<div id="app" class="fixtures-page hidden">
+  <section class="fpa-card fixture-card">
+    <div class="toolbar">
+      <div><h1>Fixtures</h1><div id="subtitle" class="fpa-muted"></div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button id="shareCalendar" class="btn">📅 Calendar link</button><button id="addFixture" class="btn primary hidden">+ Add fixture</button></div>
+    </div>
+    <div class="filters" style="margin-top:12px">
+      <select id="statusFilter"><option value="all">All fixtures</option><option value="upcoming">Upcoming</option><option value="completed">Completed</option><option value="cancelled">Cancelled / postponed</option></select>
+      <select id="venueFilter"><option value="all">All venues</option><option value="home">Home</option><option value="away">Away</option><option value="neutral">Neutral</option></select>
+    </div>
+  </section>
+  <section class="fpa-card fixture-card"><div id="fixtureList" class="fixture-list"></div></section>
+  <section id="editor" class="fpa-card editor hidden">
+    <h2 id="editorTitle">Add fixture</h2>
+    <div class="form-grid">
+      <div class="field full"><label>Opponent</label><input id="opponent" type="text" placeholder="Opponent name"></div>
+      <div class="field"><label>Venue</label><select id="venue"><option value="home">Home</option><option value="away">Away</option><option value="neutral">Neutral</option></select></div>
+      <div class="field"><label>Competition</label><input id="competition" type="text" placeholder="League, Cup, Friendly…"></div>
+      <div class="field"><label>Date & time</label><input id="kickOff" type="datetime-local"></div>
+      <div class="field"><label>Status</label><select id="status"><option value="scheduled">Scheduled</option><option value="live">Live</option><option value="completed">Completed</option><option value="postponed">Postponed</option><option value="cancelled">Cancelled</option></select></div>
+      <div class="field full"><label>Ground name</label><input id="groundName" type="text" placeholder="Ground or pitch name"></div>
+      <div class="field full"><label>Ground address</label><input id="groundAddress" type="text" placeholder="Address"></div>
+      <div class="field"><label>Postcode</label><input id="groundPostcode" type="text" placeholder="TR5 0XX"></div>
+      <div class="field"><label>Home score</label><input id="homeScore" type="number" min="0" inputmode="numeric"></div>
+      <div class="field"><label>Away score</label><input id="awayScore" type="number" min="0" inputmode="numeric"></div>
+    </div>
+    <div class="editor-actions"><button id="cancelEdit" class="btn">Cancel</button><button id="saveFixture" class="btn primary">Save fixture</button></div>
+    <div id="editStatus" class="statusline"></div>
+  </section>
+</div>
+</main>
+<script>
+const sb=FootballPAClient;
+const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let ctx,fixtures=[],editingId=null,calendarUrl='';
+const final=f=>String(f.status||'').toLowerCase()==='completed';
+const localValue=iso=>{if(!iso)return'';const d=new Date(iso),p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())};
+const prettyDate=iso=>{if(!iso)return{d:'—',m:''};const x=new Date(iso);return{d:x.getDate(),m:x.toLocaleDateString('en-GB',{month:'short'}),full:x.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})+' · '+x.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}};
+function filtered(){
+ const sf=$('statusFilter').value,vf=$('venueFilter').value,now=Date.now();
+ return fixtures.filter(f=>{
+  if(vf!=='all'&&f.venue!==vf)return false;
+  if(sf==='upcoming'&&(final(f)||new Date(f.kick_off).getTime()<now))return false;
+  if(sf==='completed'&&!final(f))return false;
+  if(sf==='cancelled'&&!['cancelled','postponed'].includes(f.status))return false;
+  return true;
+ });
+}
+function render(){
+ const rows=filtered().sort((a,b)=>new Date(a.kick_off||0)-new Date(b.kick_off||0));
+ $('fixtureList').innerHTML=rows.length?rows.map(f=>{
+  const dt=prettyDate(f.kick_off),score=final(f)&&f.home_score!=null&&f.away_score!=null?f.home_score+'–'+f.away_score:'',venue=String(f.venue||'neutral').toLowerCase();
+  const place=[f.ground_name,f.ground_postcode].filter(Boolean).join(' · '),maps=(f.ground_address||f.ground_postcode||f.ground_name)?'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent([f.ground_name,f.ground_address,f.ground_postcode].filter(Boolean).join(', ')):'';
+  return '<div class="fixture-item"><div class="fixture-date"><b>'+esc(dt.d)+'</b><span>'+esc(dt.m)+'</span></div><div class="fixture-body"><div class="fixture-top"><div class="fixture-main"><strong>'+esc(f.opponent)+'</strong><div class="fixture-meta"><span>'+esc(dt.full)+'</span>'+(f.competition?'<span>• '+esc(f.competition)+'</span>':'')+'</div></div>'+(score?'<div class="score">'+esc(score)+'</div>':'')+'</div>'+(place?'<div class="fixture-location"><span class="pin">📍</span><span>'+esc(place)+'</span></div>':'')+'<div class="fixture-actions"><span class="pill '+esc(venue)+'">'+esc(venue.toUpperCase())+'</span>'+(maps?'<a class="fixture-action primary" href="'+maps+'" target="_blank" rel="noopener">Directions</a>':'')+((ctx.access?.can_manage_fixtures??ctx.canManage)?'<button class="fixture-action secondary" data-edit="'+f.id+'">Edit</button>':'')+'</div></div></div>';
+ }).join(''):'<div class="empty">No fixtures match these filters.</div>';
+ document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openEditor(b.dataset.edit));
+}
+function openEditor(id=null){
+ editingId=id;const f=id?fixtures.find(x=>x.id===id):null;
+ $('editorTitle').textContent=f?'Edit fixture':'Add fixture';
+ $('opponent').value=f?.opponent||'';$('venue').value=f?.venue||'home';$('competition').value=f?.competition||'';$('kickOff').value=localValue(f?.kick_off);$('status').value=f?.status||'scheduled';$('groundName').value=f?.ground_name||'';$('groundAddress').value=f?.ground_address||'';$('groundPostcode').value=f?.ground_postcode||'';$('homeScore').value=f?.home_score??'';$('awayScore').value=f?.away_score??'';$('editStatus').textContent='';
+ $('editor').classList.remove('hidden');$('editor').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function closeEditor(){editingId=null;$('editor').classList.add('hidden')}
+async function enrichMissingGrounds(){
+ const missing=fixtures.filter(f=>f.external_source==='fa_full_time'&&f.external_id&&!(f.ground_name||f.ground_address||f.ground_postcode));
+ if(!(ctx.access?.can_manage_fixtures??ctx.canManage)||!missing.length||!ctx.settings?.fixture_source_url)return false;
+ try{
+  const {data:{session}}=await sb.auth.getSession();if(!session)return false;
+  const resp=await fetch('https://hennzggqaquevqgiucqn.supabase.co/functions/v1/fa-fulltime-preview',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':'sb_publishable_3ibkYwM0fFdHgKdGFIN5cQ_BT_WudUW'},body:JSON.stringify({url:ctx.settings.fixture_source_url,teamId:ctx.team.id})});
+  const data=await resp.json();if(!data.ok)return false;
+  const byId=new Map((data.rows||[]).map(r=>[String(r.externalId||r.id||''),r]));
+  let changed=false;
+  for(const f of missing){
+   const r=byId.get(String(f.external_id));if(!r)continue;
+   const patch={ground_name:r.groundName||r.venue||null,ground_address:r.groundAddress||null,ground_postcode:r.groundPostcode||null,updated_at:new Date().toISOString()};
+   if(!(patch.ground_name||patch.ground_address||patch.ground_postcode))continue;
+   const u=await sb.from('fixtures').update(patch).eq('id',f.id).eq('team_id',ctx.team.id);if(!u.error)changed=true;
+  }
+  return changed;
+ }catch{return false}
+}
+async function loadFixtures(){
+ let q=sb.from('fixtures').select('id,team_id,season_id,opponent,venue,competition,kick_off,status,home_score,away_score,external_source,external_id,ground_name,ground_address,ground_postcode').eq('team_id',ctx.team.id).order('kick_off');
+ if(ctx.season?.id)q=q.eq('season_id',ctx.season.id);
+ const {data,error}=await q;if(error)throw error;fixtures=data||[];
+ const enriched=await enrichMissingGrounds();
+ if(enriched){
+   let q2=sb.from('fixtures').select('id,team_id,season_id,opponent,venue,competition,kick_off,status,home_score,away_score,external_source,external_id,ground_name,ground_address,ground_postcode').eq('team_id',ctx.team.id).order('kick_off');
+   if(ctx.season?.id)q2=q2.eq('season_id',ctx.season.id);
+   const r2=await q2;if(!r2.error)fixtures=r2.data||fixtures;
+ }
+ render();
+}
+async function save(){
+ if(!(ctx.access?.can_manage_fixtures??ctx.canManage))return;
+ const opponent=$('opponent').value.trim(),kick=$('kickOff').value;
+ if(!opponent){$('editStatus').textContent='Opponent is required.';return}
+ if(!kick){$('editStatus').textContent='Date and time are required.';return}
+ const payload={opponent,venue:$('venue').value,competition:$('competition').value.trim()||null,kick_off:new Date(kick).toISOString(),status:$('status').value,ground_name:$('groundName').value.trim()||null,ground_address:$('groundAddress').value.trim()||null,ground_postcode:$('groundPostcode').value.trim().toUpperCase()||null,home_score:$('homeScore').value===''?null:Number($('homeScore').value),away_score:$('awayScore').value===''?null:Number($('awayScore').value),updated_at:new Date().toISOString()};
+ $('saveFixture').disabled=true;$('saveFixture').textContent='Saving…';$('editStatus').textContent='';
+ try{
+  let r;if(editingId)r=await sb.from('fixtures').update(payload).eq('id',editingId).eq('team_id',ctx.team.id);else r=await sb.from('fixtures').insert({...payload,team_id:ctx.team.id,season_id:ctx.season?.id||null});
+  if(r.error)throw r.error;await loadFixtures();closeEditor();
+ }catch(e){$('editStatus').textContent=e.message}finally{$('saveFixture').disabled=false;$('saveFixture').textContent='Save fixture'}
+}
+async function boot(){try{
+ ctx=await FootballPAContext.resolve();FootballPANav.mount({teamId:ctx.team.id});if(ctx.club.primary_colour)document.documentElement.style.setProperty('--blue',ctx.club.primary_colour);
+ $('subtitle').textContent=(ctx.season?.label||ctx.team.season_label||'Current season');if((ctx.access?.can_manage_fixtures??ctx.canManage))$('addFixture').classList.remove('hidden');
+ const {data:calSettings}=await sb.from('team_settings').select('fixture_calendar_token').eq('team_id',ctx.team.id).maybeSingle();
+ if(calSettings?.fixture_calendar_token)calendarUrl='https://hennzggqaquevqgiucqn.supabase.co/functions/v1/team-calendar?token='+encodeURIComponent(calSettings.fixture_calendar_token);
+ $('addFixture').onclick=()=>openEditor();$('shareCalendar').onclick=async()=>{if(!calendarUrl){alert('Calendar link is not available yet.');return}const name=(ctx.club?.name?ctx.club.name+' ':'')+(ctx.team?.name||'Football PA')+' fixtures';try{if(navigator.share){await navigator.share({title:name,text:'Subscribe to our Football PA fixtures calendar',url:calendarUrl});return}}catch(e){if(e?.name==='AbortError')return}try{await navigator.clipboard.writeText(calendarUrl);const b=$('shareCalendar'),old=b.textContent;b.textContent='✓ Link copied';setTimeout(()=>b.textContent=old,1800)}catch{prompt('Copy this calendar subscription link:',calendarUrl)}};$('cancelEdit').onclick=closeEditor;$('saveFixture').onclick=save;$('statusFilter').onchange=render;$('venueFilter').onchange=render;
+ await loadFixtures();$('loading').classList.add('hidden');$('app').classList.remove('hidden');
+}catch(e){$('loading').innerHTML='<b>Could not load fixtures.</b><br><span class="fpa-muted">'+esc(e.message)+'</span>'}}
+sb.auth.onAuthStateChange((e,s)=>{if(e==='SIGNED_OUT'||!s)location.replace('./login.html')});boot();
+</script>
+</body></html>

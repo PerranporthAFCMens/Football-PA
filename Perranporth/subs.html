@@ -1,401 +1,169 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0b5ea8">
-  <title>Perranporth Subs Tracker</title>
-  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
-  <link rel="icon" type="image/png" href="./apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.webmanifest">
-  <script src="./bridge-live.js?v=20260920-sessionfix3"></script>
-  <script src="./button-feedback.js" defer></script>
-  <style>
-    :root{--blue:#0b5ea8;--dark:#123b5d;--danger:#c62828;--green:#23811c;--bg:#f3f6f8;--line:#d8e0e6;--text:#17212b;--muted:#71808e}
-    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text);-webkit-text-size-adjust:100%}
-    .app{width:100%;max-width:720px;margin:0 auto;padding:max(10px,env(safe-area-inset-top)) 10px max(24px,env(safe-area-inset-bottom))}
-    .card{background:#fff;border-radius:16px;padding:14px;margin-bottom:10px;box-shadow:0 1px 5px #00000010;border:1px solid #e9eef2}
-    .hero{display:flex;align-items:center;gap:12px}.badge{width:54px;height:54px;border-radius:50%;object-fit:contain;background:#fff}
-    h1{font-size:22px;margin:0;color:var(--dark)}h2{font-size:18px;margin:0 0 12px}.muted{color:var(--muted);font-size:13px}.hidden{display:none!important}
-    input{width:100%;min-height:48px;padding:12px 13px;border:1px solid var(--line);border-radius:12px;font-size:16px;background:#fff;color:var(--text)}
-    .btn{border:0;border-radius:12px;min-height:50px;padding:12px 14px;font-size:16px;font-weight:700;background:var(--blue);color:#fff;cursor:pointer}.btn.secondary{background:#e7edf2;color:#263746}.btn.danger{background:var(--danger)}.btn.green{background:var(--green)}.btn.purple{background:#6b42c1}.btn.full{width:100%}
-    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}.score{display:flex;justify-content:space-between;align-items:center;gap:10px}.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#17212b;color:#fff;padding:11px 16px;border-radius:20px;display:none;z-index:1000}
-    .pinWrap{min-height:70vh;display:flex;align-items:center;justify-content:center}.pinCard{width:100%;max-width:380px;text-align:center}
-    .heroActions{margin-left:auto;display:flex;gap:6px;align-items:center}.homeBtn,.refreshBtn,.logoutBtn{text-decoration:none;min-height:38px;padding:7px 10px;font-size:12px;display:flex;align-items:center;justify-content:center}.refreshBtn{width:40px;font-size:20px}
-    .subsSummary{display:grid;grid-template-columns:1fr 1fr;gap:8px}.subsSummaryBox{background:#f5f8fa;border:1px solid #dfe7ed;border-radius:12px;padding:12px;text-align:center}.subsSummaryBox b{display:block;font-size:24px;color:var(--dark)}
-    .subsPlayer{border:1px solid #e0e7ed;border-radius:12px;margin:9px 0;background:#fff;overflow:hidden}.subsPlayer summary{padding:12px;cursor:pointer;font-weight:800;list-style:none}.subsPlayer summary::-webkit-details-marker{display:none}.subsPlayerBody{padding:0 12px 12px}
-    .subsMatchRow{border-top:1px solid #edf1f4;padding:10px 0}.subsStatus{display:inline-block;border-radius:999px;padding:4px 8px;font-size:12px;font-weight:800}.subsStatus.paid{background:#e5f6e8;color:#19752b}.subsStatus.claimed{background:#fff4d9;color:#8a6410}.subsStatus.owed{background:#fdeaea;color:#a42121}.subsStatus.unknown{background:#eef2f5;color:#61717f}
-    .subsActions{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:7px}.subsActions .btn{min-height:40px;font-size:13px;padding:8px}
-    .subsViewTabs{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:12px 0}.subsViewTabs .btn{min-height:42px;padding:8px;font-size:13px}.subsViewTabs .btn.active{background:var(--blue);color:#fff}
-    .subsDebtorRow{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid #edf1f4}.subsDebtorRow:last-child{border-bottom:0}.subsOwedAmt{font-size:20px;font-weight:800;white-space:nowrap}.subsMini{font-size:12px;color:#6b7b89;margin-top:3px}.subsMatchSummary{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.success{background:#e9f7ed;border:1px solid #ccebd4;color:#1d6b31;border-radius:11px;padding:11px}
-    .loadingInline{padding:14px 0;color:var(--muted);font-size:13px}
-    @media(max-width:520px){.app{max-width:none;padding:max(7px,env(safe-area-inset-top)) 7px max(18px,env(safe-area-inset-bottom))}.card{border-radius:13px;padding:11px}.hero{gap:9px}.badge{width:46px;height:46px}h1{font-size:20px}.btn{min-height:47px;padding:9px 10px;font-size:15px}.subsViewTabs{grid-template-columns:1fr 1fr}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Football PA Subs Tracker</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./core-client.js"></script>
+<style>
+:root{--blue:#1357A6;--green:#218a35;--red:#b42318;--purple:#6f42c1;--ink:#17212b;--muted:#708090;--line:#dce5ec;--bg:#eef3f7}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);font:15px Arial,sans-serif;color:var(--ink)}
+button,select,input{font:inherit}.app{width:min(780px,100%);margin:auto;padding:12px 10px 38px}.hidden{display:none!important}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 5px 16px #173a5010}
+h2,h3{margin:0}h2{font-size:20px}.muted{color:var(--muted);font-size:12px;line-height:1.4}.status{padding:14px}.bad{color:var(--red)}
+.summaryGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:13px}.summaryBox{background:#f5f8fb;border:1px solid #dce5ec;border-radius:14px;padding:13px;text-align:center}
+.summaryBox b{display:block;font-size:25px;color:#173b5a}.summaryBox span{display:block;margin-top:3px;color:var(--muted);font-size:10px;text-transform:uppercase;font-weight:800;letter-spacing:.04em}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0 14px}.tab{min-height:44px;border:0;border-radius:12px;background:#e8eef3;color:#2b3d4c;font-weight:850;cursor:pointer;padding:8px}.tab.active{background:var(--blue);color:#fff}
+.picker{width:100%;min-height:49px;border:1px solid #ccd9e3;border-radius:12px;background:#fff;padding:10px 12px;font-size:16px}
+.file{margin-top:11px;border:1px solid #dce5ec;border-radius:15px;background:#fff;overflow:hidden}.fileHead{padding:14px;background:linear-gradient(145deg,#f9fbfd,#f2f7fb);border-bottom:1px solid #e4ebf0}
+.fileHeadTop{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.fileHead h3{font-size:18px}.bigMoney{font-size:24px;font-weight:900;white-space:nowrap}.fileBody{padding:0 13px 13px}
+.row{padding:12px 0;border-bottom:1px solid #edf1f4}.row:last-child{border-bottom:0}.rowTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.matchName{font-weight:850}.mini{font-size:11px;color:#71808e;margin-top:3px}
+.pill{display:inline-flex;align-items:center;border-radius:999px;padding:5px 8px;font-size:11px;font-weight:850;white-space:nowrap}.paid{background:#e7f7eb;color:#176b2f}.owed{background:#fdeaea;color:#a42121}.claim{background:#fff3d5;color:#8b6300}.na{background:#edf1f4;color:#61717f}.unknown{background:#eef4fb;color:#315d84}
+.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.btn{border:0;border-radius:11px;min-height:39px;padding:8px 11px;font-weight:850;cursor:pointer;background:var(--blue);color:#fff}.btn.green{background:var(--green)}.btn.red{background:var(--red)}.btn.secondary{background:#e8eef3;color:#2f4252}.btn.purple{background:var(--purple)}.btn.full{width:100%}.btn:disabled{opacity:.55}
+.payBox{margin:12px 0;padding:12px;border-radius:13px;background:#f5efff;border:1px solid #dfd1f4}.payBoxTop{display:flex;align-items:center;justify-content:space-between;gap:10px}.payBox b{font-size:16px}
+.debtor{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #edf1f4;cursor:pointer}.debtor:last-child{border-bottom:0}.debtorAmount{font-size:18px;font-weight:900}
+.empty{padding:13px;border:1px solid #e3e9ee;border-radius:12px;background:#f7f9fb;color:var(--muted);font-size:12px}.success{padding:13px;border:1px solid #bfe2c8;border-radius:12px;background:#eaf8ee;color:#1f6b33}
+.sectionTitle{display:flex;align-items:end;justify-content:space-between;gap:10px;margin-bottom:9px}.sectionTitle h3{font-size:15px}.sectionTitle span{font-size:11px;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#152433;color:#fff;padding:10px 14px;border-radius:999px;font-weight:800;font-size:12px;z-index:100;display:none;box-shadow:0 8px 25px #0003}
+@media(max-width:560px){.app{padding:8px 7px 30px}.card{padding:13px;border-radius:15px}.summaryGrid{gap:5px}.summaryBox{padding:11px 5px}.summaryBox b{font-size:21px}.summaryBox span{font-size:8px}.tabs{gap:5px}.tab{font-size:12px}.actions .btn{flex:1;min-width:86px;font-size:12px}.fileHead{padding:12px}}
+</style>
+<script src="./core-context.js"></script>
+<script src="./core-nav.js"></script>
+<link rel="stylesheet" href="./core-ui.css">
 </head>
-<body onload="boot()">
-<div class="app">
-  <div id="subsLogin" class="pinWrap hidden"><div class="card pinCard"><h1>Subs Tracker</h1><div class="muted" style="margin:8px 0 16px">Management access required</div><input id="pinInput" type="password" inputmode="numeric" placeholder="Enter management PIN"><button id="subsLoginBtn" class="btn full" style="margin-top:10px" onclick="login()">Open Subs Tracker</button><div id="loginError" class="muted" style="margin-top:10px"></div></div></div>
-  <div id="subsApp" class="hidden">
-    <div class="card hero">
-      <img id="badge" class="badge" src="./apple-touch-icon.png" alt="Perranporth AFC">
-      <div><h1>Perranporth Subs Tracker</h1><div id="season" class="muted">Loading current data…</div></div>
-      <div class="heroActions">
-        <a class="btn secondary homeBtn" href="./" target="_top">Home</a>
-        <a class="btn secondary refreshBtn" href="./subs.html" aria-label="Refresh">↻</a>
-        <button class="btn secondary logoutBtn" onclick="logoutAdmin()">Log out</button>
-      </div>
-    </div>
-
+<body>
+<div class="app fpa-page">
+  <div id="loading" class="card status">Loading Subs Tracker…</div>
+  <div id="appBody" class="hidden">
     <div class="card">
-      <div class="score"><div><h2>Subs Tracker</h2><div class="muted">£3 per game · based on matches played</div></div></div>
-      <div id="subsTrackerSummary" style="margin:12px 0"><div class="loadingInline">Loading subs summary…</div></div>
-      <div class="subsViewTabs">
-        <button id="subsTabConfirm" class="btn active" onclick="setSubsView('confirm')">Confirm</button>
-        <button id="subsTabPlayer" class="btn secondary" onclick="setSubsView('player')">By Player</button>
-        <button id="subsTabMatch" class="btn secondary" onclick="setSubsView('match')">By Match</button>
-        <button id="subsTabOwed" class="btn secondary" onclick="setSubsView('owed')">Amounts Owed</button>
+      <div><h2>Subs Tracker</h2><div id="configText" class="muted" style="margin-top:4px"></div></div>
+      <div id="summary" class="summaryGrid"></div>
+      <div class="tabs">
+        <button class="tab active" data-tab="summary">Summary</button>
+        <button class="tab" data-tab="player">By Player</button>
+        <button class="tab" data-tab="match">By Match</button>
       </div>
-      <div id="subsTrackerConfirmView"><div class="loadingInline">Loading payment status…</div></div>
-      <div id="subsTrackerPlayerView" class="hidden"></div>
-      <div id="subsTrackerMatchView" class="hidden"></div>
-      <div id="subsTrackerOwedView" class="hidden"></div>
+      <section id="summaryView">
+        <div class="sectionTitle"><h3>Outstanding</h3><span>Tap a player to open their file</span></div>
+        <div id="outstandingList"></div>
+        <div id="claimBlock" style="margin-top:12px"></div>
+      </section>
+      <section id="playerView" class="hidden">
+        <select id="playerPicker" class="picker"><option value="">Select player…</option></select>
+        <div id="playerFile"></div>
+      </section>
+      <section id="matchView" class="hidden">
+        <select id="matchPicker" class="picker"><option value="">Select match…</option></select>
+        <div id="matchFile"></div>
+      </section>
     </div>
   </div>
 </div>
 <div id="toast" class="toast"></div>
 <script>
-let PIN='';
-const ADMIN_AUTH_KEY='pmd_admin_auth';
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',2300)}
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function escJs(s){return encodeURIComponent(String(s??''))}
-function val(id){const e=document.getElementById(id);return e?e.value:''}
-function saveAdminAuth_(session){try{localStorage.setItem(ADMIN_AUTH_KEY,JSON.stringify(session))}catch(e){}}
-function getSavedAdminAuth_(){try{const raw=localStorage.getItem(ADMIN_AUTH_KEY);if(!raw)return null;try{const x=JSON.parse(raw);if(x&&x.token)return x}catch(e){}return {token:raw,expiresAt:Date.now()+86400000}}catch(e){return null}}
-function clearSavedAdminAuth_(){try{localStorage.removeItem(ADMIN_AUTH_KEY)}catch(e){}}
-function showLogin_(message){
-  document.getElementById('subsApp').classList.add('hidden');
-  document.getElementById('subsLogin').classList.remove('hidden');
-  const e=document.getElementById('loginError');if(e)e.textContent=message||'';
+const sb=FootballPAClient;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=p=>'£'+((Number(p)||0)/100).toFixed(2);
+const fmt=v=>v?new Date(v).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'}):'Date TBC';
+let club,team,season,D={players:[],matches:[],roster:[],summary:{}},tab='summary',selectedPlayer='',selectedMatch='',busy=false;
+
+function toast(msg){const t=$('toast');t.textContent=msg;t.style.display='block';clearTimeout(toast._t);toast._t=setTimeout(()=>t.style.display='none',2200)}
+function pillClass(s){if(s==='Confirmed Paid')return'paid';if(s==='Claims Paid')return'claim';if(s==='Not Paid'||s==='Unconfirmed')return'owed';if(s==='N/A')return'na';return'unknown'}
+function fixtureLabel(m){return fmt(m.kick_off)+' · '+m.opponent+(m.venue?' · '+String(m.venue).toUpperCase():'')}
+function statusButtons(fixtureId,playerId,status){
+  const f=esc(fixtureId),p=esc(playerId);
+  if(status==='Confirmed Paid')return '<button class="btn secondary" data-status="reset" data-fixture="'+f+'" data-player="'+p+'">Undo paid</button>';
+  return '<button class="btn green" data-status="confirmed_paid" data-fixture="'+f+'" data-player="'+p+'">Received</button><button class="btn red" data-status="not_paid" data-fixture="'+f+'" data-player="'+p+'">Not received</button><button class="btn secondary" data-status="na" data-fixture="'+f+'" data-player="'+p+'">N/A</button>';
 }
 async function boot(){
-  const saved=getSavedAdminAuth_();
-  if(saved&&saved.token&&(!saved.expiresAt||saved.expiresAt>Date.now())){
-    try{
-      PIN=saved.token;
-      const [init,subs]=await Promise.all([pmdCall('getInitData',PIN),pmdCall('getSubsTrackerData',PIN)]);
-      return openSubsFromData_({init,subs});
-    }catch(e){
-      PIN='';
-      return showLogin_(e.message||'Your management session has expired. Please enter your PIN again.');
-    }
-  }
-  showLogin_();
-}
-async function login(){
-  const entered=val('pinInput').trim();
-  if(!entered)return toast('Enter PIN');
-  const btn=document.getElementById('subsLoginBtn');
-  if(btn){btn.disabled=true;btn.textContent='Opening…'}
   try{
-    const data=await pmdCall('openSubsWithPin',entered);
-    PIN=data.session.token;
-    saveAdminAuth_(data.session);
-    openSubsFromData_(data);
-  }catch(e){
-    if(btn){btn.disabled=false;btn.textContent='Open Subs Tracker'}
-    toast(e.message||'Incorrect PIN');
+    const ctx=await FootballPAContext.resolve();club=ctx.club;team=ctx.team;FootballPANav.mount({teamId:team.id});
+    if(club?.primary_colour)document.documentElement.style.setProperty('--blue',club.primary_colour);
+    let r=await sb.from('seasons').select('id,label,active').eq('club_id',club.id).eq('label',team.season_label).maybeSingle();
+    if(r.error)throw r.error;season=r.data;
+    if(!season){r=await sb.from('seasons').select('id,label,active').eq('club_id',club.id).eq('active',true).limit(1).maybeSingle();if(r.error)throw r.error;season=r.data}
+    if(!season)throw new Error('No active season is configured for this team.');
+    await reload();$('loading').classList.add('hidden');$('appBody').classList.remove('hidden');
+  }catch(e){$('loading').textContent=e.message;$('loading').classList.add('bad')}
+}
+async function reload(){
+  const r=await sb.rpc('get_subs_tracker_v2',{p_team_id:team.id,p_season_id:season.id});
+  if(r.error)throw r.error;D=r.data||{players:[],matches:[],roster:[],summary:{}};
+  $('configText').textContent=money(D.charge_amount_pence)+' per game · payments tracked against each fixture';
+  renderAll();
+}
+function renderAll(){renderSummary();renderPickers();renderPlayer();renderMatch();setTab(tab)}
+function renderSummary(){
+  const s=D.summary||{};
+  $('summary').innerHTML='<div class="summaryBox"><b>'+money(s.outstanding_pence)+'</b><span>Outstanding</span></div><div class="summaryBox"><b>'+money(s.received_pence)+'</b><span>Received</span></div><div class="summaryBox"><b>'+(s.players_owing||0)+'</b><span>Players owing</span></div>';
+  const due=(D.players||[]).filter(p=>Number(p.amount_due_pence)>0).sort((a,b)=>Number(b.amount_due_pence)-Number(a.amount_due_pence)||a.name.localeCompare(b.name));
+  $('outstandingList').innerHTML=due.length?due.map(p=>'<div class="debtor" data-open-player="'+esc(p.player_id)+'"><div><b>'+esc(p.name)+'</b><div class="mini">'+p.payment_due_games+' game'+(p.payment_due_games===1?'':'s')+' to pay</div></div><div class="debtorAmount">'+money(p.amount_due_pence)+' ›</div></div>').join(''):'<div class="success">Nobody currently owes subs.</div>';
+  const claims=(D.players||[]).filter(p=>Number(p.claims_paid)>0);
+  $('claimBlock').innerHTML=claims.length?'<div class="sectionTitle"><h3>Awaiting confirmation</h3><span>'+claims.reduce((n,p)=>n+Number(p.claims_paid||0),0)+' claim(s)</span></div>'+claims.map(p=>'<div class="debtor" data-open-player="'+esc(p.player_id)+'"><div><b>'+esc(p.name)+'</b><div class="mini">'+p.claims_paid+' payment claim'+(p.claims_paid===1?'':'s')+' to check</div></div><span class="pill claim">Check</span></div>').join(''):'';
+}
+function renderPickers(){
+  $('playerPicker').innerHTML='<option value="">Select player…</option>'+(D.players||[]).slice().sort((a,b)=>a.name.localeCompare(b.name)).map(p=>'<option value="'+esc(p.player_id)+'" '+(p.player_id===selectedPlayer?'selected':'')+'>'+esc(p.name)+'</option>').join('');
+  $('matchPicker').innerHTML='<option value="">Select match…</option>'+(D.matches||[]).slice().sort((a,b)=>new Date(b.kick_off)-new Date(a.kick_off)).map(m=>'<option value="'+esc(m.fixture_id)+'" '+(m.fixture_id===selectedMatch?'selected':'')+'>'+esc(fixtureLabel(m))+'</option>').join('');
+}
+function playerMessage(p){
+  const unpaid=(p.matches||[]).filter(m=>m.status==='Not Paid'||m.status==='Unconfirmed');
+  return p.name+' – subs outstanding\n\n'+unpaid.map(m=>fmt(m.kick_off)+' – '+m.opponent).join('\n')+'\n\nTotal: '+money(p.amount_due_pence)+(p.payment_link?'\n'+p.payment_link:'');
+}
+function renderPlayer(){
+  const host=$('playerFile');if(!selectedPlayer){host.innerHTML='';return}
+  const p=(D.players||[]).find(x=>x.player_id===selectedPlayer);if(!p){host.innerHTML='';return}
+  const matches=p.matches||[];
+  const pay=Number(p.amount_due_pence)>0?'<div class="payBox"><div class="payBoxTop"><div><b>Outstanding subs</b><div class="mini">'+p.payment_due_games+' game'+(p.payment_due_games===1?'':'s')+'</div></div><div class="bigMoney">'+money(p.amount_due_pence)+'</div></div>'+(p.payment_link?'<a class="btn purple full" style="display:block;text-align:center;text-decoration:none;margin-top:10px" target="_blank" rel="noopener" href="'+esc(p.payment_link)+'">Pay '+money(p.amount_due_pence)+' in one payment</a>':'')+'<button class="btn secondary full" style="margin-top:7px" data-copy-player="'+esc(p.player_id)+'">Copy matches + payment link</button></div>':'<div class="success" style="margin:12px 0">Nothing currently due to pay.</div>';
+  const rows=matches.length?matches.map(m=>'<div class="row"><div class="rowTop"><div><div class="matchName">'+esc(fmt(m.kick_off)+' · '+m.opponent)+'</div><div class="mini">'+esc(m.competition||'Fixture')+' · '+esc(m.venue||'')+'</div></div><span class="pill '+pillClass(m.status)+'">'+esc(m.status)+'</span></div><div class="actions">'+statusButtons(m.fixture_id,p.player_id,m.status)+'</div></div>').join(''):'<div class="empty">No chargeable matches recorded for this player yet.</div>';
+  host.innerHTML='<div class="file"><div class="fileHead"><div class="fileHeadTop"><div><h3>'+esc(p.name)+'</h3><div class="mini">'+p.confirmed_paid+' paid · '+p.payment_due_games+' owing'+(p.claims_paid?' · '+p.claims_paid+' claim(s) to check':'')+'</div></div><div class="bigMoney">'+money(p.amount_due_pence)+'</div></div></div><div class="fileBody">'+pay+'<div class="sectionTitle"><h3>Match history</h3><span>'+matches.length+' match'+(matches.length===1?'':'es')+'</span></div>'+rows+'</div></div>';
+}
+function matchPlayers(m){
+  const arr=[...(m.players||[])];
+  if(!m.is_final&&!m.has_saved_squad){
+    const have=new Set(arr.map(p=>p.player_id));
+    for(const r of (D.roster||[]))if(!have.has(r.player_id))arr.push({player_id:r.player_id,name:r.name,shirt_number:r.shirt_number,status:'Not selected yet',fallback:true});
   }
+  const rank=s=>({'Not Paid':0,'Unconfirmed':0,'Claims Paid':1,'Not selected yet':2,'Confirmed Paid':3,'N/A':4}[s]??5);
+  return arr.sort((a,b)=>rank(a.status)-rank(b.status)||String(a.name).localeCompare(String(b.name)));
 }
-function openSubsFromData_(data){
-  const login=document.getElementById('subsLogin');
-  if(login) login.classList.add('hidden');
-  document.getElementById('subsApp').classList.remove('hidden');
-  const init=(data&&data.init)||{};
-  if(init.badgeUrl)document.getElementById('badge').src=init.badgeUrl;
-  document.getElementById('season').textContent=init.season||'';
-  renderSubsTracker((data&&data.subs)||{players:[],matches:[],debtors:[],pendingConfirmation:[],totalOutstandingAmount:0,totalClaimsPaid:0});
+function renderMatch(){
+  const host=$('matchFile');if(!selectedMatch){host.innerHTML='';return}
+  const m=(D.matches||[]).find(x=>x.fixture_id===selectedMatch);if(!m){host.innerHTML='';return}
+  const players=matchPlayers(m),due=players.filter(p=>p.status==='Not Paid'||p.status==='Unconfirmed'),paid=players.filter(p=>p.status==='Confirmed Paid');
+  const copy=due.length?'<button class="btn secondary full" style="margin:10px 0 2px" data-copy-match="'+esc(m.fixture_id)+'">Copy outstanding list + payment link</button>':'';
+  const note=!m.is_final&&!m.has_saved_squad?'<div class="empty" style="margin:10px 0">No squad has been saved for this fixture yet, so all active players are shown. You can still mark payments received before matchday.</div>':'';
+  const rows=players.length?players.map(p=>'<div class="row"><div class="rowTop"><div><div class="matchName">'+esc(p.name)+'</div><div class="mini">'+(p.fallback?'Not yet in saved squad':(p.played?'Played':'Match squad'))+'</div></div><span class="pill '+pillClass(p.status)+'">'+esc(p.status)+'</span></div><div class="actions">'+statusButtons(m.fixture_id,p.player_id,p.status)+'</div></div>').join(''):'<div class="empty">No players are attached to this match yet.</div>';
+  host.innerHTML='<div class="file"><div class="fileHead"><div class="fileHeadTop"><div><h3>'+esc(m.opponent)+'</h3><div class="mini">'+esc(fixtureLabel(m))+' · '+esc(m.competition||'Fixture')+'</div></div><span class="pill paid">'+paid.length+' paid</span></div></div><div class="fileBody">'+note+'<div class="summaryGrid" style="grid-template-columns:1fr 1fr;margin:12px 0"><div class="summaryBox"><b>'+paid.length+'</b><span>Paid</span></div><div class="summaryBox"><b>'+due.length+'</b><span>Outstanding</span></div></div>'+copy+rows+'</div></div>';
 }
-async function logoutAdmin(){
-  const token=PIN;
-  clearSavedAdminAuth_();
-  PIN='';
-  try{if(token)await pmdCall('logoutAdminSession',token)}catch(e){}
-  showLogin_();
-  const i=document.getElementById('pinInput');
-  if(i) i.value='';
+function setTab(name){tab=name;['summary','player','match'].forEach(v=>{$(v+'View').classList.toggle('hidden',v!==name);document.querySelectorAll('[data-tab="'+v+'"]').forEach(b=>b.classList.toggle('active',v===name))})}
+async function setStatus(btn){
+  if(busy)return;busy=true;const old=btn.textContent;btn.disabled=true;btn.textContent='Saving…';
+  const r=await sb.rpc('set_subs_match_status',{p_team_id:team.id,p_season_id:season.id,p_fixture_id:btn.dataset.fixture,p_player_id:btn.dataset.player,p_status:btn.dataset.status});
+  busy=false;if(r.error){btn.disabled=false;btn.textContent=old;toast(r.error.message);return}
+  await reload();toast('Subs updated');
 }
-async function showSubsTracker(){
-  const d=await pmdCall('getSubsTrackerData',PIN);
-  renderSubsTracker(d);
+async function copyText(text,msg){try{await navigator.clipboard.writeText(text);toast(msg)}catch(e){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast(msg)}}
+function copyMatch(id){
+  const m=(D.matches||[]).find(x=>x.fixture_id===id);if(!m)return;
+  const due=matchPlayers(m).filter(p=>p.status==='Not Paid'||p.status==='Unconfirmed');
+  if(!due.length)return toast('Nobody is outstanding for this match');
+  const text=m.opponent+' – subs outstanding\n\n'+due.map(p=>p.name).join('\n')+'\n\n'+money(D.charge_amount_pence)+' each'+(m.payment_link?'\n'+m.payment_link:'');
+  copyText(text,'Match payment list copied');
 }
-let SUBS_DATA=null;
-let SUBS_VIEW='confirm';
-let OPEN_SUBS_MATCH_ID='';
-
-function subsClass(status){
-  if(status==='Confirmed Paid') return 'paid';
-  if(status==='Claims Paid') return 'claimed';
-  if(status==='Not Paid') return 'owed';
-  return 'unknown';
-}
-
-function setSubsView(view){
-  SUBS_VIEW=view;
-  ['confirm','player','match','owed'].forEach(v=>{
-    const pane=document.getElementById('subsTracker'+v[0].toUpperCase()+v.slice(1)+'View');
-    const tab=document.getElementById('subsTab'+v[0].toUpperCase()+v.slice(1));
-    if(pane) pane.classList.toggle('hidden',v!==view);
-    if(tab){
-      tab.classList.toggle('active',v===view);
-      tab.classList.toggle('secondary',v!==view);
-    }
-  });
-}
-
-function renderSubsTracker(d){
-  SUBS_DATA=d;
-  document.getElementById('subsTrackerSummary').innerHTML=
-    `<div class="subsSummary">
-      <div class="subsSummaryBox"><b>£${d.totalOutstandingAmount}</b><span class="muted">currently due to pay</span></div>
-      <div class="subsSummaryBox"><b>${d.totalClaimsPaid}</b><span class="muted">claim paid · check</span></div>
-    </div>`;
-
-  renderSubsConfirm(d);
-  renderSubsByPlayer(d);
-  renderSubsByMatch(d);
-  renderSubsAmountsOwed(d);
-  setSubsView(SUBS_VIEW);
-}
-
-function renderSubsConfirm(d){
-  const host=document.getElementById('subsTrackerConfirmView');
-  const rows=[];
-
-  d.players.forEach(p=>{
-    p.matches
-      .filter(m=>m.status==='Claims Paid' || m.status==='Not Paid' || m.status==='Unconfirmed')
-      .forEach(m=>rows.push({player:p.name,...m}));
-  });
-
-  rows.sort((a,b)=>{
-    const order={'Claims Paid':0,'Not Paid':1,'Unconfirmed':2};
-    return (order[a.status]??9)-(order[b.status]??9) ||
-      String(b.date).localeCompare(String(a.date)) ||
-      a.player.localeCompare(b.player);
-  });
-
-  host.innerHTML=rows.length?rows.map(x=>{
-    const cls=subsClass(x.status);
-    const action=`<div class="grid2">
-      <button class="btn green" onclick="setSubs('${esc(x.matchId)}','${esc(x.player)}','Confirmed Paid')">Received</button>
-      <button class="btn danger" onclick="setSubs('${esc(x.matchId)}','${esc(x.player)}','Not Paid')">Not Received</button>
-    </div>`;
-
-    return `<div class="subsPlayer" style="padding:12px">
-      <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
-        <div>
-          <b>${esc(x.player)}</b>
-          <div class="subsMini">${esc(x.date)} · ${esc(x.match)}</div>
-        </div>
-        <span class="subsStatus ${cls}">${esc(x.status)}</span>
-      </div>
-      <div style="margin-top:10px">${action}</div>
-    </div>`;
-  }).join(''):'<div class="success">Everything that has been reported is confirmed.</div>';
-}
-
-function renderSubsByPlayer(d){
-  const host=document.getElementById('subsTrackerPlayerView');
-
-  host.innerHTML=d.players.length?d.players.map(p=>{
-    const unpaid=p.unpaidMatches||p.matches.filter(m=>
-      m.status==='Not Paid'||m.status==='Unconfirmed'
-    );
-
-    const unpaidRows=unpaid.length
-      ? unpaid.map(m=>`
-          <div class="subsMatchRow">
-            <div><b>${esc(m.date)} · ${esc(m.match)}</b></div>
-            <div style="margin-top:5px">
-              <span class="subsStatus ${subsClass(m.status)}">${esc(m.status)}</span>
-            </div>
-          </div>`).join('')
-      : '<div class="success">Nothing currently due to pay.</div>';
-
-    const payBox=unpaid.length
-      ? `<div style="background:#f6f0ff;border:1px solid #ded0f2;border-radius:12px;padding:12px;margin-bottom:12px">
-          <div style="display:flex;justify-content:space-between;gap:12px;align-items:center">
-            <div>
-              <b style="font-size:17px">Outstanding subs to pay</b>
-              <div class="subsMini">${unpaid.length} game${unpaid.length===1?'':'s'}</div>
-            </div>
-            <div class="subsOwedAmt">£${p.amountDue}</div>
-          </div>
-          <div style="margin-top:8px">${unpaidRows}</div>
-          ${p.totalPaymentLink
-            ? `<a class="btn purple full" style="margin-top:10px;text-decoration:none;text-align:center"
-                 href="${esc(p.totalPaymentLink)}" target="_blank" rel="noopener">Pay £${p.amountDue} in one payment</a>`
-            : ''}
-          <button class="btn secondary full" style="margin-top:7px"
-            onclick="copyPaymentForPlayer(decodeURIComponent('${escJs(p.name)}'))">Copy matches + payment link</button>
-        </div>`
-      : unpaidRows;
-
-    const historyRows=p.matches.map(m=>{
-      const cls=subsClass(m.status);
-      const mainAction=m.status==='Confirmed Paid'
-        ? `<button class="btn secondary" onclick="setSubs('${esc(m.matchId)}','${esc(p.name)}','Claims Paid')">Undo confirm</button>`
-        : `<button class="btn green" onclick="setSubs('${esc(m.matchId)}','${esc(p.name)}','Confirmed Paid')">Received</button>`;
-
-      return `<div class="subsMatchRow">
-        <div><b>${esc(m.date)} · ${esc(m.match)}</b></div>
-        <div style="margin-top:5px"><span class="subsStatus ${cls}">${esc(m.status)}</span></div>
-        <div class="subsActions">
-          ${mainAction}
-          <button class="btn danger" onclick="setSubs('${esc(m.matchId)}','${esc(p.name)}','Not Paid')">Not Received</button>
-          <button class="btn secondary" onclick="setSubs('${esc(m.matchId)}','${esc(p.name)}','N/A')">N/A</button>
-        </div>
-      </div>`;
-    }).join('');
-
-    const summary=p.amountDue>0
-      ? `£${p.amountDue} to pay`
-      : p.claimsPaid
-        ? `${p.claimsPaid} payment claim${p.claimsPaid===1?'':'s'} to check`
-        : 'all confirmed';
-
-    return `<details class="subsPlayer">
-      <summary>${esc(p.name)} — ${summary}</summary>
-      <div class="subsPlayerBody">
-        ${payBox}
-        ${p.claimsPaid
-          ? `<div class="muted" style="margin:8px 0 10px">🟡 ${p.claimsPaid} payment${p.claimsPaid===1?'':'s'} claimed paid and awaiting management confirmation — not included in the amount above.</div>`
-          : ''}
-        <details style="margin-top:8px">
-          <summary style="font-weight:800;cursor:pointer">Full match history / manage statuses</summary>
-          <div style="margin-top:6px">
-            ${historyRows||'<div class="muted">No chargeable matches yet.</div>'}
-          </div>
-        </details>
-      </div>
-    </details>`;
-  }).join(''):'<div class="muted">No subs data yet.</div>';
-}
-
-function renderSubsByMatch(d){
-  const host=document.getElementById('subsTrackerMatchView');
-  host.innerHTML=d.matches.length?d.matches.map(m=>{
-    const rows=m.players.map(p=>{
-      const cls=subsClass(p.status);
-      const mainAction=p.status==='Confirmed Paid'
-        ? `<button class="btn secondary" onclick="setSubs('${esc(m.matchId)}','${esc(p.name)}','Claims Paid')">Undo confirm</button>`
-        : `<button class="btn green" onclick="setSubs('${esc(m.matchId)}','${esc(p.name)}','Confirmed Paid')">Received</button>`;
-      return `<div class="subsMatchRow">
-        <div><b>${esc(p.name)}</b> <span class="subsStatus ${cls}">${esc(p.status)}</span></div>
-        <div class="subsActions">
-          ${mainAction}
-          <button class="btn danger" onclick="setSubs('${esc(m.matchId)}','${esc(p.name)}','Not Paid')">Not Received</button>
-          <button class="btn secondary" onclick="setSubs('${esc(m.matchId)}','${esc(p.name)}','N/A')">N/A</button>
-        </div>
-      </div>`;
-    }).join('');
-    return `<details class="subsPlayer" ${OPEN_SUBS_MATCH_ID===m.matchId?'open':''}>
-      <summary onclick="OPEN_SUBS_MATCH_ID='${esc(m.matchId)}'">${esc(m.date)} · ${esc(m.match)} — ${m.confirmedPaid} confirmed</summary>
-      <div class="subsPlayerBody">${rows}</div>
-    </details>`;
-  }).join(''):'<div class="muted">No subs data yet.</div>';
-}
-
-function renderSubsAmountsOwed(d){
-  const host=document.getElementById('subsTrackerOwedView');
-  const rows=d.debtors||[];
-  host.innerHTML=rows.length?rows.map(p=>{
-    const claim=`${p.claimsPaid||0} claim${(p.claimsPaid||0)===1?'':'s'} waiting`;
-    return `<div class="subsDebtorRow">
-      <div><b>${esc(p.name)}</b><div class="subsMini">${p.paymentDue||0} to pay · ${claim}</div></div>
-      <div class="subsOwedAmt">£${p.amountDue||0}</div>
-    </div>`;
-  }).join(''):'<div class="success">Nobody currently owes subs.</div>';
-}
-
-function buildMonzoLink_(amount,identifier){
-  const pounds=Number(amount||0).toFixed(2);
-  return `https://monzo.me/adamturner4/${pounds}?h=CmJ3lb&d=${encodeURIComponent(identifier||'Subs')}&account_type=personal`;
-}
-
-function playerSubsIdentifier_(playerName){
-  return String(playerName||'')
-    .replace(/[^A-Za-z0-9]/g,'') + 'Subs';
-}
-
-function copyNotPaidForMatch(matchId){
-  if(!SUBS_DATA) return;
-  const m=SUBS_DATA.matches.find(x=>x.matchId===matchId);
-  if(!m) return;
-
-  const names=m.players.filter(p=>p.status==='Not Paid').map(p=>p.name);
-  if(!names.length){
-    toast('Nobody is marked Not Received for this match');
-    return;
-  }
-
-  const paymentLink=m.paymentLink||buildMonzoLink_(3,'Subs');
-  const text=
-`${m.match} – subs outstanding
-
-${names.join('\n')}
-
-£3 each
-${paymentLink}`;
-
-  copyText_(text,'Match list copied');
-}
-
-function copyPaymentForPlayer(playerName){
-  if(!SUBS_DATA)return;
-  const p=SUBS_DATA.players.find(x=>x.name===playerName);
-  if(!p)return;
-
-  const matches=p.unpaidMatches||p.matches.filter(m=>
-    m.status==='Not Paid'||m.status==='Unconfirmed'
-  );
-  if(!matches.length){
-    toast('No subs currently due for '+playerName);
-    return;
-  }
-
-  const total=Number(p.amountDue||matches.length*3);
-  const paymentLink=p.totalPaymentLink||buildMonzoLink_(total,playerSubsIdentifier_(playerName));
-  const text=
-`${playerName} – subs outstanding
-
-${matches.map(m=>`${m.date} – ${m.match}`).join('\n')}
-
-Total: £${total}
-${paymentLink}`;
-
-  copyText_(text,'Player payment details copied');
-}
-
-function copyNotPaidForPlayer(playerName){
-  copyPaymentForPlayer(playerName);
-}
-
-async function copyText_(text,success){
-  try{await navigator.clipboard.writeText(text);toast(success||'Copied')}
-  catch(e){
-    const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast(success||'Copied');
-  }
-}
-
-async function setSubs(matchId,player,status){
-  if(SUBS_VIEW==='match') OPEN_SUBS_MATCH_ID=matchId;
-  const d=await pmdCall('setSubsStatus',PIN,matchId,player,status);
-  renderSubsTracker(d);
-  toast(player+' — '+status);
-}
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-tab]');if(t){setTab(t.dataset.tab);return}
+  const op=e.target.closest('[data-open-player]');if(op){selectedPlayer=op.dataset.openPlayer;setTab('player');renderPickers();renderPlayer();return}
+  const st=e.target.closest('[data-status]');if(st){setStatus(st);return}
+  const cp=e.target.closest('[data-copy-player]');if(cp){const p=(D.players||[]).find(x=>x.player_id===cp.dataset.copyPlayer);if(p)copyText(playerMessage(p),'Player payment details copied');return}
+  const cm=e.target.closest('[data-copy-match]');if(cm){copyMatch(cm.dataset.copyMatch);return}
+});
+$('playerPicker').onchange=()=>{selectedPlayer=$('playerPicker').value;renderPlayer()};
+$('matchPicker').onchange=()=>{selectedMatch=$('matchPicker').value;renderMatch()};
+sb.auth.onAuthStateChange((e,s)=>{if(e==='SIGNED_OUT'||!s)location.replace('./login.html')});
+boot();
 </script>
 </body>
 </html>
