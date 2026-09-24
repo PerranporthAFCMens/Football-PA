@@ -1,4 +1,5 @@
 name: Sync Perranporth app
+# Squad share sync
 
 on:
   workflow_dispatch:
