@@ -1,5 +1,5 @@
 name: Sync Perranporth app
-# Subs tracker sync
+# Subs tracker direct-fixture sync
 
 on:
   workflow_dispatch:
