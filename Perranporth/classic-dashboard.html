@@ -50,12 +50,15 @@
   <link rel="icon" type="image/png" href="./Club_Logo.png">
   
   
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./core-client.js"></script>
+  <script src="./core-context.js"></script>
 </head>
 <body>
 <div class="wrap">
   <div id="loading" class="loading">Loading season dashboard…</div>
   <div id="app" style="display:none">
-    <div class="hero"><img id="badge" class="badge" alt="Perranporth AFC"><div><h1 id="title">Perranporth AFC</h1><div class="sub" id="subtitle"></div></div><div class="heroActions"><a class="backBtn" href="./" aria-label="Back to home" title="Back to home">←</a><a class="refreshBtn" href="./classic-dashboard.html" aria-label="Refresh dashboard" title="Refresh">↻</a></div></div>
+    <div class="hero"><img id="badge" class="badge" alt="Perranporth AFC"><div><h1 id="title">Perranporth AFC</h1><div class="sub" id="subtitle"></div></div><div class="heroActions"><a id="classicBack" class="backBtn" href="./" aria-label="Back to home" title="Back to home">←</a><a id="classicRefresh" class="refreshBtn" href="./classic-dashboard.html" aria-label="Refresh dashboard" title="Refresh">↻</a></div></div>
     <div class="controls"><select id="seasonMode"></select><select id="competition"></select><select id="venue"><option value="All">All venues</option><option>Home</option><option>Away</option><option>Neutral</option></select></div>
     <div id="comparisonPanel" style="display:none"></div>
     <div id="detailView">
@@ -116,8 +119,17 @@ async function loadEdge(action,onSuccess,onFailure){
 }
 function loadFresh(){loadEdge('getPublicDashboardData',data=>applyCurrent(data,false),err=>{if(!BUNDLE)$('loading').textContent='Could not load dashboard: '+(err&&err.message?err.message:err);else $('updated').textContent='Showing saved view · live refresh failed'})}
 function startDashboard(){let local=null;try{local=JSON.parse(localStorage.getItem(LOCAL_CACHE)||'null')}catch(e){}if(local){applyCurrent(local,true);loadFresh()}else{loadFresh()}}
-async function auditDashboardOpen(){try{let raw=localStorage.getItem('pmd_admin_auth')||'';let token='';try{const obj=JSON.parse(raw);token=obj&&obj.token?obj.token:''}catch(e){token=raw}if(token)await pmdCall('recordManagementPageOpen',token,'Season Dashboard')}catch(e){}}
-startDashboard();
+async function bootClassicDashboard(){
+  try{
+    const ctx=await FootballPAContext.resolve({teamId:'d5bcdf95-40a2-4596-b044-e9c8bcabecbc'});
+    document.getElementById('classicBack').href=ctx.href('/index.html');
+    document.getElementById('classicRefresh').href=ctx.href('/classic-dashboard.html');
+    startDashboard();
+  }catch(e){
+    document.getElementById('loading').textContent='Could not open Classic Dashboard: '+(e&&e.message?e.message:e);
+  }
+}
+bootClassicDashboard();
 </script>
 </body>
 </html>
