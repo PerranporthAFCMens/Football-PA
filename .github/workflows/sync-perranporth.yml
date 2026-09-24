@@ -27,13 +27,12 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Fetch current Core and legacy dashboard
+      - name: Fetch current Football PA Core
         run: |
-          rm -rf _core_source _legacy_source
+          rm -rf _core_source
           git clone --depth 1 --branch main https://github.com/PerranporthAFCMens/Football-PA-Core-Web.git _core_source
-          git clone --depth 1 --branch main https://github.com/PerranporthAFCMens/Perranporth.git _legacy_source
 
-      - name: Publish Core Perranporth app
+      - name: Publish Perranporth customer app
         run: |
           rm -rf Perranporth
           mkdir -p Perranporth
@@ -51,57 +50,22 @@ jobs:
             _core_source/ Perranporth/
 
           CORE_SHA="$(git -C _core_source rev-parse HEAD)"
-          CLASSIC_SHA="$(git -C _legacy_source rev-parse HEAD)"
           printf '%s\n' "$CORE_SHA" > Perranporth/.core-source-sha
-          printf '%s\n' "$CLASSIC_SHA" > Perranporth/.classic-dashboard-source-sha
 
-          cp _legacy_source/dashboard.html Perranporth/classic-dashboard.html
-
-          python - <<'PY'
-          from pathlib import Path
-
-          p = Path('Perranporth/classic-dashboard.html')
-          text = p.read_text(encoding='utf-8')
-          text = text.replace(
-              '<script src="./bridge-live.js?v=20260920-authfix1"></script>',
-              ''
-          )
-          text = text.replace(
-              '<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">',
-              '<link rel="apple-touch-icon" sizes="180x180" href="./Club_Logo.png">'
-          )
-          text = text.replace(
-              '<link rel="icon" type="image/png" href="./apple-touch-icon.png">',
-              '<link rel="icon" type="image/png" href="./Club_Logo.png">'
-          )
-          text = text.replace(
-              '<link rel="manifest" href="./manifest.webmanifest">',
-              ''
-          )
-          text = text.replace(
-              'href="./dashboard.html" aria-label="Refresh dashboard"',
-              'href="./classic-dashboard.html" aria-label="Refresh dashboard"'
-          )
-          text = text.replace(
-              "function startDashboard(){let local=null;try{local=JSON.parse(localStorage.getItem(LOCAL_CACHE)||'null')}catch(e){}if(local){applyCurrent(local,true);loadFresh()}else{loadFresh()}auditDashboardOpen()}",
-              "function startDashboard(){let local=null;try{local=JSON.parse(localStorage.getItem(LOCAL_CACHE)||'null')}catch(e){}if(local){applyCurrent(local,true);loadFresh()}else{loadFresh()}}"
-          )
-          p.write_text(text, encoding='utf-8')
-
-          alias = Path('Perranporth/classic-dashboard')
-          alias.mkdir(parents=True, exist_ok=True)
-          alias.joinpath('index.html').write_text("""<!doctype html>
+          mkdir -p Perranporth/classic-dashboard
+          cat > Perranporth/classic-dashboard/index.html <<'EOF'
+          <!doctype html>
           <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
           <meta http-equiv="refresh" content="0;url=../classic-dashboard.html">
           <title>Opening Classic Dashboard…</title>
           <script>location.replace('../classic-dashboard.html'+location.search+location.hash)</script>
-          </head><body><a href="../classic-dashboard.html">Open Classic Dashboard</a></body></html>""", encoding='utf-8')
-          PY
+          </head><body><a href="../classic-dashboard.html">Open Classic Dashboard</a></body></html>
+          EOF
 
       - name: Commit synced app
         id: commit
         run: |
-          rm -rf _core_source _legacy_source
+          rm -rf _core_source
           git add Perranporth
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
