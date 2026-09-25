@@ -1,5 +1,5 @@
 name: Sync Perranporth app
-# Lineup persistence sync
+# Lineup image share sync
 
 on:
   workflow_dispatch:
